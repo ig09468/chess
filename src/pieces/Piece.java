@@ -9,7 +9,7 @@ import java.awt.*;
  * @author Kitei
  *
  */
-public class Piece {
+public abstract class Piece {
 
     /* Couleur de la pièce */
     private String color;
@@ -29,16 +29,14 @@ public class Piece {
 
     /**
      * Constructor de la classe.
-     * @param color, est la couleur de la pièce
-     * @param posX,  la position horizontale
-     * @param posY,  la position verticale
+     * @param color, La couleur de la pièce
+     * @param position, La position de la pièce
      *
      */
-    public Piece(String color, int posX, int posY) {
+    public Piece(String color, Point position) {
 
         this.color = color;
-        this.position.x = posX;
-        this.position.y = posY;
+        this.position=position;
         this.onBoard = true;
         this.hasNeverMoved = true;
 
@@ -67,7 +65,7 @@ public class Piece {
 
     /**
      * Fonction permettant de retourner si la pièce est sur le board
-     * @return onBoard;
+     * @return onBoard
      */
     public boolean getOnBoard(){
         return onBoard;
@@ -75,12 +73,17 @@ public class Piece {
 
     /**
      * Fonction pour savoir si la pièce a déjà bouger dans la partie
-     * @return 
+     * @return hasNeverMoved
      */
     public boolean getHasNeverMoved(){
         return hasNeverMoved;
     }
 
+    /**
+     * Calcule du mouvement d'une piece.
+     * @param boardInstance
+     */
+    public abstract void calculateLegalMoves(Board boardInstance);
 
     public void decimateLegalMovesCheck(Board boardInstance){
         if(this.legalMove.length>0){

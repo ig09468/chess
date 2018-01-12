@@ -23,16 +23,20 @@ public class Tile {
 
     }
 
+    /**
+     * Permet de vérifier si la case est occupée
+     * @return
+     */
     public boolean isOccupied(){
         return piece!=null;
     }
 
+    /**
+     * Retourne la piece occupant la case
+     * @return
+     */
     public Piece getPiece(){
         return piece;
-    }
-
-    public void setHighlight(boolean bHighlighted) {
-        this.highlighted = bHighlighted;
     }
 
 

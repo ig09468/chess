@@ -1,5 +1,9 @@
 package pieces;
 
+import logique.Board;
+
+import java.awt.*;
+
 /** Classe pour les fous
  * @extends Piece
  *
@@ -7,8 +11,16 @@ package pieces;
 
 public class Bishop extends Piece {
 
-    public Bishop(String color, int posX, int posY){
-        super(color,posX,posY);
+    public Bishop(String color, Point position){
+        super(color, position);
+    }
+
+    /**
+     * Calcule du mouvement d'une piece.
+     * @param boardInstance
+     */
+    public void calculateLegalMoves(Board boardInstance){
+
     }
 
     public static String toShortString(){

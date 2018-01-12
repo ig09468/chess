@@ -1,16 +1,34 @@
 package pieces;
 
+import logique.Board;
+
+import java.awt.*;
+
 /** Classe pour les rois
  * @extends Piece
  *
  * */
 public class King extends Piece {
 
-    public King(String color, int posX, int posY){
-        super(color,posX,posY);
+    /**
+     * Constructeur de la classe
+     * @param color
+     * @param position
+     */
+    public King(String color, Point position){
+        super(color,position);
+    }
+
+    /**
+     * Calcule du mouvement d'une piece.
+     * @param boardInstance
+     */
+    public void calculateLegalMoves(Board boardInstance){
+
     }
 
     public static String toShortString(){
         return "K";
     }
+
 }

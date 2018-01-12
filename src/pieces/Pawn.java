@@ -14,12 +14,12 @@ public class Pawn extends Piece {
 
     /**
      * Constructor de la classe.
-     * @param color
-     * @param posX
-     * @param posY
+     * @param color La couleur de la piece
+     * @param position Position de la piece
      */
-    public Pawn(String color, int posX, int posY) {
-        super(color, posX, posY);
+
+    public Pawn(String color, Point position) {
+        super(color, position);
         this.LastMoveIsDouble=false;
     }
 
@@ -31,19 +31,21 @@ public class Pawn extends Piece {
         return LastMoveIsDouble;
     }
 
-    /**
-     *
-     * @return
-     */
-    public static String toShortString(){
-        return "P";
-    }
 
     /**
-     *
+     * Calcule du mouvement d'une piece.
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance){
 
     }
+
+    /**
+     * toShortString - Donne la représentation officielle de la pièce
+     * @return Représentation de la pièce
+     */
+    public static String toShortString(){
+        return "P";
+    }
+
 }
