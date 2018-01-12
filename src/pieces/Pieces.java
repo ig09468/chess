@@ -73,7 +73,10 @@ public class Pieces {
         return onBoard;
     }
 
-
+    /**
+     * Fonction pour savoir si la pièce a déjà bouger dans la partie
+     * @return 
+     */
     public boolean getHasNeverMove(){
         return hasNeverMove;
     }
