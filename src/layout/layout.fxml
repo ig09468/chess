@@ -1,8 +1,15 @@
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.GridPane?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<GridPane fx:controller="layout.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<BorderPane fx:controller="layout.Controller" xmlns:fx="http://javafx.com/fxml">
+    <GridPane alignment="center" hgap="10" vgap="10" prefHeight="480" prefWidth="480">
+        <stylesheets>
+            <URL value="@layout.css"/>
+        </stylesheets>
+
+    </GridPane>
+</BorderPane>
