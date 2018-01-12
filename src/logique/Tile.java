@@ -1,6 +1,6 @@
 package logique;
 
-import pieces.Pieces;
+import pieces.Piece;
 
 import java.awt.*;
 
@@ -11,12 +11,12 @@ public class Tile {
     private Point position;
 
     /* Piece occupant la case */
-    private Pieces piece;
+    private Piece piece;
 
     /*  */
     private boolean highlighted;
 
-    public Tile(Point position, Pieces piece){
+    public Tile(Point position, Piece piece){
 
         this.position=position;
         this.piece=piece;
@@ -27,7 +27,7 @@ public class Tile {
         return piece!=null;
     }
 
-    public Pieces getPiece(){
+    public Piece getPiece(){
         return piece;
     }
 

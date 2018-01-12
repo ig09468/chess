@@ -5,11 +5,11 @@ import logique.Board;
 import java.awt.*;
 
 /**
- * Pieces est la classe Mère correspondant aux pièces d'un plateau.
+ * Piece est la classe Mère correspondant aux pièces d'un plateau.
  * @author Kitei
  *
  */
-public class Pieces {
+public class Piece {
 
     /* Couleur de la pièce */
     private String color;
@@ -24,7 +24,7 @@ public class Pieces {
     private Point legalMove[];
 
     /* Si elle n'a jamais été déplacée */
-    private boolean hasNeverMove;
+    private boolean hasNeverMoved;
 
 
     /**
@@ -34,13 +34,13 @@ public class Pieces {
      * @param posY,  la position verticale
      *
      */
-    public Pieces(String color, int posX, int posY) {
+    public Piece(String color, int posX, int posY) {
 
         this.color = color;
         this.position.x = posX;
         this.position.y = posY;
         this.onBoard = true;
-        this.hasNeverMove = true;
+        this.hasNeverMoved = true;
 
     }
 
@@ -77,8 +77,8 @@ public class Pieces {
      * Fonction pour savoir si la pièce a déjà bouger dans la partie
      * @return 
      */
-    public boolean getHasNeverMove(){
-        return hasNeverMove;
+    public boolean getHasNeverMoved(){
+        return hasNeverMoved;
     }
 
 

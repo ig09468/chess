@@ -4,7 +4,7 @@ import logique.Board;
 
 import java.awt.*;
 
-public class Pawn extends Pieces {
+public class Pawn extends Piece {
 
     /* Stock si le dernier mouvement est double. */
     private boolean LastMoveIsDouble;

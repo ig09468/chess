@@ -1,11 +1,11 @@
 package pieces;
 
 /** Classe pour les fous
- * @extends Pieces
+ * @extends Piece
  *
  * */
 
-public class Bishop extends Pieces {
+public class Bishop extends Piece {
 
     public Bishop(String color, int posX, int posY){
         super(color,posX,posY);

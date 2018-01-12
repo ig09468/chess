@@ -4,7 +4,7 @@ package pieces;
  * @extends Piece
  *
  * */
-public class King extends Pieces {
+public class King extends Piece {
 
     public King(String color, int posX, int posY){
         super(color,posX,posY);
