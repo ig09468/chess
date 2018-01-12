@@ -10,20 +10,22 @@ public class Pieces {
     private String color;
     private int posX;
     private int posY;
-
+    private boolean onBoard;
+    private
     /**
      * Constructor de la classe.
      *
      * @param color, est la couleur de la pièce
      * @param posX,  la position horizontale
      * @param posY,  la position verticale
+     *
      */
     public Pieces(String color, int posX, int posY) {
 
-        this.color = new String(color);
+        this.color = color;
         this.posX = posX;
         this.posY = posY;
-
+        this.onBoard= true;
     }
 
 

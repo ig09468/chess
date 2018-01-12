@@ -11,6 +11,6 @@ public class Knight extends Pieces {
     }
 
     public static String toShortString(){
-        return "K";
+        return "N";
     }
 }
