@@ -38,8 +38,7 @@ public class Knight extends Piece {
             testTile = boardInstance.getTile(testPos);
             if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
                 this.legalMoves.add(testPos);
-            }
-                                else if (testTile!=null && testTile.getPiece().isWhite()) {
+            } else if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
                 this.legalMoves.add(testPos);
             }
         }

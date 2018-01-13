@@ -74,7 +74,7 @@ public class Queen extends Piece {
                     testPos = toCoord(new Point(testPos.x + modifierX, testPos.y + modifierY));
                 } else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile.getPiece().isWhite()) {
+                    if (testTile.getPiece().isWhite()!=this.white) {
                         this.legalMoves.add(testPos);
                     }
                     //sinon, ne rien faire

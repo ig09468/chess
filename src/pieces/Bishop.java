@@ -44,7 +44,7 @@ public class Bishop extends Piece {
 
         /*                              */
         for (int j = 0; j < 4; j++) {
-            testPos = toCoord(new Point(this.position.x + initPositions[j][0],  this.position.y + initPositions[j][1]);
+            testPos = toCoord(new Point(this.position.x + initPositions[j][0],  this.position.y + initPositions[j][1]));
 
             /*                          */
             for (int i = 0; testPos != null && i<7; i++) {
@@ -63,7 +63,7 @@ public class Bishop extends Piece {
                 }else
                     {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile!=null && testTile.getPiece().isWhite()) {
+                    if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
                         this.legalMoves.add(testPos);
                     }
                         //sinon, ne rien faire

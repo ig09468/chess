@@ -83,7 +83,7 @@ public class Pawn extends Piece {
 
                 /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
                    si c'est bon, on l'ajoute à la liste */
-                if(testTile.getPiece().isWhite()){
+                if(testTile.getPiece().isWhite()!=this.white){
                     this.legalMoves.add(testPos);
                 }else
                 {
