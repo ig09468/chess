@@ -4,6 +4,7 @@ package logique;
 import pieces.*;
 import utils.ChessUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Board {
@@ -34,4 +35,7 @@ public class Board {
 
     }
 
+    public Tile getTile(Point position){
+
+    }
 }

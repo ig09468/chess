@@ -3,6 +3,7 @@ package pieces;
 import logique.Board;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Piece est la classe Mère correspondant aux pièces d'un plateau.
@@ -12,19 +13,23 @@ import java.awt.*;
 public abstract class Piece {
 
     /* Couleur de la pièce */
-    private boolean white;
+    protected boolean white;
 
     /* Position actuelle de la pièce */
-    private Point position;
+    protected Point position;
 
     /* Si elle est sur le plateau ou non */
-    private boolean onBoard;
+    protected boolean onBoard;
 
     /* Ses mouvements légaux actuels */
-    private Point legalMove[];
+    protected ArrayList <Point> legalMoves;
+
+
+    /* Tableau de prise passants position */
+    protected ArrayList <Point> enPassantCapturePos;
 
     /* Si elle n'a jamais été déplacée */
-    private boolean hasNeverMoved;
+    protected boolean hasNeverMoved;
 
 
     /**
@@ -86,7 +91,7 @@ public abstract class Piece {
     public abstract void calculateLegalMoves(Board boardInstance);
 
     public void decimateLegalMovesCheck(Board boardInstance){
-        if(this.legalMove.length>0){
+        if(this.legalMoves.size()>0){
 
         }
     }

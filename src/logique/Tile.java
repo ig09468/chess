@@ -13,9 +13,12 @@ public class Tile {
     /* Piece occupant la case */
     private Piece piece;
 
-    /*  */
-    private boolean highlighted;
 
+    /**
+     * Constructeur de la classe.
+     * @param position La position de la pièce
+     * @param piece La pièce dans cette case
+     */
     public Tile(Point position, Piece piece){
 
         this.position=position;

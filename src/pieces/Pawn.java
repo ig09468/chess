@@ -1,6 +1,7 @@
 package pieces;
 
 import logique.Board;
+import logique.Tile;
 
 import java.awt.*;
 
@@ -39,6 +40,72 @@ public class Pawn extends Piece {
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance){
+
+        /* Vérification de boardInstance */
+        if(boardInstance==null){
+            System.out.println("Erreur !");
+        }
+        /* Vidage du tableau des mouvements légaux */
+        legalMoves.clear();
+
+
+        int posY = (this.white ? 1 : -1);
+        /* Affectation du point de test, déplacement en diagonale */
+        Point testPos = new Point(this.position.x, this.position.y + posY);
+
+        /* Case à tester */
+        Tile testTile = boardInstance.getTile(testPos);
+
+        /*Vérification de la case devant le pion */
+        if(testTile!=null && !testTile.isOccupied()) {
+            this.legalMoves.add(testPos);
+
+            /* Nouvelle attribution de valeur en y */
+            testPos.setLocation(testPos.x,testPos.y + posY);
+            testTile=boardInstance.getTile(testPos);
+
+            /* Test si la deuxième case est disponible */
+            if(this.hasNeverMoved && testTile!=null && !testTile.isOccupied()){
+                this.legalMoves.add(testPos);
+            }
+        }
+
+        /* Affectation de la nouvelle position */
+        testPos.setLocation(this.position.x + 1, this.position.y + ((this.white) ? 1 : -1) );
+        testTile=boardInstance.getTile(testPos);
+
+        /* Vérification si testTile existe bien */
+        if (testTile!=null){
+            if(testTile.isOccupied()){
+
+                /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
+                   si c'est bon, on l'ajoute à la liste */
+                if(testTile.getPiece().isWhite()){
+                    this.legalMoves.add(testPos);
+                }else
+                {
+                    /* Nouveau point à test, pour savoir l'une des pièces peuvent être prise enPassant */
+                    Point testPos2 = new Point(this.position.x-1, this.position.y);
+                    testTile = boardInstance.getTile(testPos2);
+                    /* Recherche de la prise en passant */
+                    if(testTile.getPiece() instanceof Pawn){
+                    Pawn testTilePiece= (Pawn)testTile.getPiece();
+                    if(testTile.isOccupied() && testTilePiece.LastMoveIsDouble)
+                    {
+                        this.enPassantCapturePos.add(testPos2);
+                        this.legalMoves.add(testPos);
+                    }
+                    testPos.y=this.position.y;
+                }
+
+                }
+            }
+        }
+
+
+
+
+
 
     }
 
