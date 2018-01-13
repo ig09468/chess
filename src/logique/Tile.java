@@ -51,10 +51,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().isWhite()!=isWhite &&  testTile.getPiece() instanceof Pawn)
-            {
-                return true;
-            }
+            return testTile.getPiece().isWhite() != isWhite && testTile.getPiece() instanceof Pawn;
         }
         return false;
     }
@@ -93,14 +90,14 @@ public class Tile {
         Tile testTile;
         int modifierX=0, modifierY=0;
 
-        for(int i=0; i < initPositions.length; i++)
+        for(int direction=0; direction < initPositions.length; direction++)
         {
-            testPos = new Point(this.position.x + initPositions[i][0],  this.position.y + initPositions[i][1]);
+            testPos = new Point(this.position.x + initPositions[direction][0],  this.position.y + initPositions[direction][1]);
             while(((testTile = boardInstance.getTile(testPos))!=null))
             {
                 if (!testTile.isOccupied()) {
 
-                    switch(i) {
+                    switch(direction) {
                         case 0: modifierX=1; break;
                         case 1: modifierY=1; break;
                         case 2: modifierX=-1; break;

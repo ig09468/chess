@@ -38,20 +38,11 @@ public class King extends Piece {
         }
 
         this.legalMoves.clear();
-        Point testPos;
-        Tile testTile;
+
         int modifierX = 0, modifierY = 0;
         int initPositions[][] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        legalMovesCalcutedForKnightAndKing(boardInstance,initPositions);
 
-        for (int i = 0; i < initPositions.length; i++) {
-            testPos =  toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
-            testTile = boardInstance.getTile(testPos);
-            if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table est inoccupée
-                this.legalMoves.add(testPos);
-            }else if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
-                this.legalMoves.add(testPos);
-            }
-        }
         this.decimateLegalMovesCheck(boardInstance);
         if((testPos = this.checkBigCastle(boardInstance)))
         {

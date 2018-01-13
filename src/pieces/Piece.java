@@ -1,9 +1,12 @@
 package pieces;
 
 import logique.Board;
+import logique.Tile;
 
 import java.awt.*;
 import java.util.ArrayList;
+
+import static utils.ChessUtils.toCoord;
 
 /**
  * Piece est la classe Mère correspondant aux pièces d'un plateau.
@@ -82,6 +85,22 @@ public abstract class Piece {
         return hasNeverMoved;
     }
 
+
+
+    public void legalMovesCalcutedForKnightAndKing(Board boardInstance,int initPositions[][]){
+        Point testPos;
+        Tile testTile;
+
+        for (int direction = 0; direction < initPositions.length; direction++) {
+            testPos = toCoord(new Point(this.position.x + initPositions[direction][0], this.position.y + initPositions[direction][1]));
+            testTile = boardInstance.getTile(testPos);
+            if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
+                this.legalMoves.add(testPos);
+            } else if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
+                this.legalMoves.add(testPos);
+            }
+        }
+    }
     /**
      * Calcule du mouvement d'une piece.
      * @param boardInstance Instance de plateau

@@ -43,17 +43,17 @@ public class Bishop extends Piece {
 
 
         /*                              */
-        for (int j = 0; j < 4; j++) {
-            testPos = toCoord(new Point(this.position.x + initPositions[j][0],  this.position.y + initPositions[j][1]));
+        for (int direction = 0; direction < 4; direction++) {
+            testPos = toCoord(new Point(this.position.x + initPositions[direction][0],  this.position.y + initPositions[direction][1]));
 
             /*                          */
-            for (int i = 0; testPos != null && i<7; i++) {
+            for (int distance = 0; testPos != null && distance<7; distance++) {
                 testTile = boardInstance.getTile(testPos);
 
                 if (testTile!=null && !testTile.isOccupied()) {
                     this.legalMoves.add(testPos);
                     /*                      */
-                    switch(j) {
+                    switch(direction) {
                         case 0: modifierX=1; modifierY=1; break;
                         case 1: modifierX=1; modifierY=-1; break;
                         case 2: modifierX=-1; modifierY=1; break;

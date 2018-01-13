@@ -33,15 +33,7 @@ public class Knight extends Piece {
         Point testPos;
         Tile testTile;
         int initPositions [][]= {{1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1}};
-        for (int i = 0; i < initPositions.length; i++) {
-            testPos = toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
-            testTile = boardInstance.getTile(testPos);
-            if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
-                this.legalMoves.add(testPos);
-            } else if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
-                this.legalMoves.add(testPos);
-            }
-        }
+        legalMovesCalcutedForKnightAndKing(boardInstance,initPositions);
         this.decimateLegalMovesCheck(boardInstance);
         this.legalMovesCalculated = true;
     }
