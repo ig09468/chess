@@ -14,7 +14,7 @@ public class Pawn extends Piece {
     private boolean LastMoveIsDouble;
 
     /* Tableau de prise passants position */
-    protected ArrayList <Point> enPassantCapturePos;
+    private ArrayList <Point> enPassantCapturePos;
 
 
     /**
@@ -83,7 +83,7 @@ public class Pawn extends Piece {
 
                 /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
                    si c'est bon, on l'ajoute à la liste */
-                if(testTile.getPiece().isWhite()!=this.w){
+                if(testTile.getPiece().compPieceColorDiff(isWhite())){
                     this.legalMoves.add(testPos);
                 }else
                 {

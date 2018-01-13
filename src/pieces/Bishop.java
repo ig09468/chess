@@ -63,7 +63,7 @@ public class Bishop extends Piece {
                 }else
                     {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
+                    if (testTile!=null && testTile.getPiece().compPieceColorDiff(this.white)) {
                         this.legalMoves.add(testPos);
                     }
                         //sinon, ne rien faire

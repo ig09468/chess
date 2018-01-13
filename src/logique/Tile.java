@@ -42,7 +42,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().isWhite()!=isWhite &&  testTile.getPiece() instanceof Pawn)
+            if(testTile.getPiece().compPieceColorDiff(isWhite) &&  testTile.getPiece() instanceof Pawn)
             {
                 return true;
             }
@@ -51,7 +51,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().isWhite() != isWhite && testTile.getPiece() instanceof Pawn)
+            if(testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece() instanceof Pawn)
                 return true;
         }
         return false;
@@ -70,7 +70,7 @@ public class Tile {
         {
             testPos = new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]);
             testTile = boardInstance.getTile(testPos);
-            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isWhite()!=isWhite && testTile.getPiece() instanceof King) {
+            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece() instanceof King) {
                 return true;
             }
 
@@ -107,7 +107,7 @@ public class Tile {
                     testPos = toCoord(new Point(testPos.x + modifierX, testPos.y + modifierY));
                 }
                 else {
-                    if (testTile.getPiece().isWhite() != isWhite && (testTile.getPiece() instanceof Rook || testTile.getPiece() instanceof Queen)) {
+                    if (testTile.getPiece().compPieceColorDiff(isWhite) && (testTile.getPiece() instanceof Rook || testTile.getPiece() instanceof Queen)) {
                         return true;
                     }
                     break;
@@ -145,7 +145,7 @@ public class Tile {
                     testPos = toCoord( new Point(testPos.x + modifierX,  testPos.y + modifierY));
                 }
                 else {
-                    if (testTile.getPiece().isWhite() != isWhite && (testTile.getPiece() instanceof Bishop || testTile.getPiece() instanceof Queen)) {
+                    if (testTile.getPiece().compPieceColorDiff(isWhite) && (testTile.getPiece() instanceof Bishop || testTile.getPiece() instanceof Queen)) {
                         return true;
                     }
                     break;
@@ -172,7 +172,7 @@ public class Tile {
     {
         testPos = toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
         testTile = boardInstance.getTile(testPos);
-        if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isWhite() != isWhite && testTile.getPiece()instanceof Knight )
+        if(testTile!=null && testTile.isOccupied() && testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece()instanceof Knight )
         {
             return true;
         }

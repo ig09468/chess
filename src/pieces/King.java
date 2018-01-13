@@ -41,15 +41,15 @@ public class King extends Piece {
 
         int modifierX = 0, modifierY = 0;
         int initPositions[][] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-        legalMovesCalcutedForKnightAndKing(boardInstance,initPositions);
-
+        legalMovesCalculatedForKnightAndKing(boardInstance,initPositions);
+        Point testPos;
         this.decimateLegalMovesCheck(boardInstance);
-        if((testPos = this.checkBigCastle(boardInstance)))
+        if((testPos = this.checkBigCastle(boardInstance))!=null)
         {
             this.legalMoves.add(testPos);
             this.bigCastle = true;
         }
-        if((testPos = this.checkLittleCastle(boardInstance)))
+        if((testPos = this.checkLittleCastle(boardInstance))!=null)
         {
             this.legalMoves.add(testPos);
             this.littleCastle = true;

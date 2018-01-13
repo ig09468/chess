@@ -52,7 +52,7 @@ public class Rook extends Piece {
                 }
                 else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile.getPiece().isWhite()!=this.white) {
+                    if (testTile.getPiece().compPieceColorDiff(this.white)){
                         this.legalMoves.add(testPos);
                     }
                     //sinon, ne rien faire

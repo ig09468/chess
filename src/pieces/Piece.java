@@ -85,9 +85,20 @@ public abstract class Piece {
         return hasNeverMoved;
     }
 
-
-
-    public void legalMovesCalcutedForKnightAndKing(Board boardInstance,int initPositions[][]){
+    /**
+     * compPieceColorDiff - Compare la couleur entre 2 pièces
+     * @param isWhite La couleur de l'autre piece
+     * @return Retourne Vrai si les pièces sont de couleurs différentes sinon faux
+     */
+    public boolean compPieceColorDiff(boolean isWhite){
+        return this.isWhite() != isWhite;
+    }
+    /**
+     * legalMovesCalculatedForKnightAndKing - Permet d'insérer les movements légaux
+     * @param boardInstance Le plateau actuel
+     * @param initPositions Les mouvements de la pièce
+     */
+    public void legalMovesCalculatedForKnightAndKing(Board boardInstance, int initPositions[][]){
         Point testPos;
         Tile testTile;
 
@@ -96,7 +107,7 @@ public abstract class Piece {
             testTile = boardInstance.getTile(testPos);
             if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
                 this.legalMoves.add(testPos);
-            } else if (testTile!=null && testTile.getPiece().isWhite()!=this.white) {
+            } else if (testTile!=null && testTile.getPiece().compPieceColorDiff(this.white)) {
                 this.legalMoves.add(testPos);
             }
         }
