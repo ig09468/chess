@@ -25,8 +25,6 @@ public abstract class Piece {
     protected ArrayList <Point> legalMoves;
 
 
-    /* Tableau de prise passants position */
-    protected ArrayList <Point> enPassantCapturePos;
 
     /* Si elle n'a jamais été déplacée */
     protected boolean hasNeverMoved;

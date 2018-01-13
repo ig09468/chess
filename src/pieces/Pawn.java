@@ -4,6 +4,7 @@ import logique.Board;
 import logique.Tile;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
@@ -12,17 +13,18 @@ public class Pawn extends Piece {
     /* Stock si le dernier mouvement est double. */
     private boolean LastMoveIsDouble;
 
-    /* Coordonnées des prises enPassant. */
-    private Point enPassantCapturePos[];
+    /* Tableau de prise passants position */
+    protected ArrayList <Point> enPassantCapturePos;
+
 
     /**
      * Constructor de la classe.
-     * @param color La couleur de la piece
+     * @param white La couleur de la piece
      * @param position Position de la piece
      */
 
-    public Pawn(boolean color, Point position) {
-        super(color, position);
+    public Pawn(boolean white, Point position) {
+        super(white, position);
         this.LastMoveIsDouble=false;
     }
 
