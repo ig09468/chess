@@ -51,7 +51,8 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            return testTile.getPiece().isWhite() != isWhite && testTile.getPiece() instanceof Pawn;
+            if(testTile.getPiece().isWhite() != isWhite && testTile.getPiece() instanceof Pawn)
+                return true;
         }
         return false;
     }
