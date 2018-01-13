@@ -10,7 +10,9 @@ import java.awt.*;
  * */
 public class Queen extends Piece {
 
-    public Queen(String color, Point position){
+    public static final char SHORTNAME = 'Q';
+
+    public Queen(boolean color, Point position){
         super(color, position);
     }
 

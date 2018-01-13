@@ -12,7 +12,7 @@ import java.awt.*;
 public abstract class Piece {
 
     /* Couleur de la pièce */
-    private String color;
+    private boolean white;
 
     /* Position actuelle de la pièce */
     private Point position;
@@ -29,13 +29,13 @@ public abstract class Piece {
 
     /**
      * Constructor de la classe.
-     * @param color, La couleur de la pièce
+     * @param white, La couleur de la pièce
      * @param position, La position de la pièce
      *
      */
-    public Piece(String color, Point position) {
+    public Piece(boolean white, Point position) {
 
-        this.color = color;
+        this.white = white;
         this.position=position;
         this.onBoard = true;
         this.hasNeverMoved = true;
@@ -44,12 +44,12 @@ public abstract class Piece {
 
 
     /**
-     * Fonction permettant de retourner la couleur de la pièce.
+     * Fonction permettant de savoir si la piece est blanche
      *
-     * @return color, la couleur.
+     * @return true si la pièce est blanche
      */
-    public String getColor() {
-        return color;
+    public boolean isWhite() {
+        return white;
     }
 
 
@@ -81,7 +81,7 @@ public abstract class Piece {
 
     /**
      * Calcule du mouvement d'une piece.
-     * @param boardInstance
+     * @param boardInstance Instance de plateau
      */
     public abstract void calculateLegalMoves(Board boardInstance);
 
@@ -92,6 +92,6 @@ public abstract class Piece {
     }
 
     public String toString() {
-        return color + " " + position.toString();
+        return white + " " + position.toString();
     }
 }

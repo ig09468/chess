@@ -6,12 +6,13 @@ import java.awt.*;
 
 public class Rook extends Piece {
 
+    public static final char SHORTNAME = 'R';
     /**
      * Constructeur de la classe
      * @param color La couleur de la piece
      * @param position La position de la piece
      */
-    public Rook(String color, Point position) {
+    public Rook(boolean color, Point position) {
         super(color, position);
     }
 

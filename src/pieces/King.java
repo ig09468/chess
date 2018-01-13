@@ -10,12 +10,13 @@ import java.awt.*;
  * */
 public class King extends Piece {
 
+    public static final char SHORTNAME = 'K';
     /**
      * Constructeur de la classe
      * @param color
      * @param position
      */
-    public King(String color, Point position){
+    public King(boolean color, Point position){
         super(color,position);
     }
 

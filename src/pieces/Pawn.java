@@ -6,6 +6,8 @@ import java.awt.*;
 
 public class Pawn extends Piece {
 
+    public static final char SHORTNAME = 'P';
+
     /* Stock si le dernier mouvement est double. */
     private boolean LastMoveIsDouble;
 
@@ -18,7 +20,7 @@ public class Pawn extends Piece {
      * @param position Position de la piece
      */
 
-    public Pawn(String color, Point position) {
+    public Pawn(boolean color, Point position) {
         super(color, position);
         this.LastMoveIsDouble=false;
     }

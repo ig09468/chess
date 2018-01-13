@@ -10,7 +10,9 @@ import java.awt.*;
  * */
 public class Knight extends Piece {
 
-    public Knight(String color, Point position){
+    public static final char SHORTNAME = 'N';
+
+    public Knight(boolean color, Point position){
         super(color, position);
     }
 

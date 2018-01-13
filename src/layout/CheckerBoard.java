@@ -58,4 +58,6 @@ public class CheckerBoard extends GridPane {
         }
         setAlignment(Pos.CENTER);
     }
+
+
 }

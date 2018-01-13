@@ -11,7 +11,9 @@ import java.awt.*;
 
 public class Bishop extends Piece {
 
-    public Bishop(String color, Point position){
+    public static final char SHORTNAME = 'B';
+
+    public Bishop(boolean color, Point position){
         super(color, position);
     }
 
