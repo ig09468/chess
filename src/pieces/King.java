@@ -1,6 +1,7 @@
 package pieces;
 
 import logique.Board;
+import logique.Tile;
 
 import java.awt.*;
 
@@ -25,6 +26,17 @@ public class King extends Piece {
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance){
+        if (boardInstance != null) {
+            System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
+            return;
+        }
+
+        this.legalMoves.clear();
+        Point testPos;
+        Tile testTile;
+        int modifierX = 0, modifierY = 0;
+        int initPositions[][] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
 
     }
 

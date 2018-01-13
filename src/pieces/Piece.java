@@ -25,11 +25,11 @@ public abstract class Piece {
     protected ArrayList <Point> legalMoves;
 
 
-
     /* Si elle n'a jamais été déplacée */
     protected boolean hasNeverMoved;
 
-
+    /* Permet de dire que les mouvements actuels sont calculés */
+    protected boolean legalMovesCalculated;
     /**
      * Constructor de la classe.
      * @param white, La couleur de la pièce

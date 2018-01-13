@@ -44,8 +44,9 @@ public class Pawn extends Piece {
     public void calculateLegalMoves(Board boardInstance){
 
         /* Vérification de boardInstance */
-        if(boardInstance==null){
-            System.out.println("Erreur !");
+        if(boardInstance!=null) {
+            System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
+            return;
         }
         /* Vidage du tableau des mouvements légaux */
         legalMoves.clear();
@@ -94,13 +95,16 @@ public class Pawn extends Piece {
                         Pawn testTilePiece= (Pawn)testTile.getPiece();
                         if(testTile.isOccupied() && testTilePiece.LastMoveIsDouble)
                         {
+                            /* Enregistre les coordonnées de la pièce mangée */
                             this.enPassantCapturePos.add(testPos2);
+                            /* Enregistre le mouvement légal */
                             this.legalMoves.add(testPos);
                         }
                     }
-
                 }
             }
+            this.decimateLegalMovesCheck(boardInstance);
+            this.legalMovesCalculated = true;
         }
 
 
