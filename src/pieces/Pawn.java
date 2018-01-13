@@ -89,14 +89,13 @@ public class Pawn extends Piece {
                     testTile = boardInstance.getTile(testPos2);
                     /* Recherche de la prise en passant */
                     if(testTile.getPiece() instanceof Pawn){
-                    Pawn testTilePiece= (Pawn)testTile.getPiece();
-                    if(testTile.isOccupied() && testTilePiece.LastMoveIsDouble)
-                    {
-                        this.enPassantCapturePos.add(testPos2);
-                        this.legalMoves.add(testPos);
+                        Pawn testTilePiece= (Pawn)testTile.getPiece();
+                        if(testTile.isOccupied() && testTilePiece.LastMoveIsDouble)
+                        {
+                            this.enPassantCapturePos.add(testPos2);
+                            this.legalMoves.add(testPos);
+                        }
                     }
-                    testPos.y=this.position.y;
-                }
 
                 }
             }
