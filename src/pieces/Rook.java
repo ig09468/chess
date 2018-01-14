@@ -25,7 +25,7 @@ public class Rook extends Piece {
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance){
-        if(boardInstance!=null) {
+        if(boardInstance==null) {
             System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
             return;
         }
@@ -52,7 +52,7 @@ public class Rook extends Piece {
                 }
                 else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile.getPiece().compPieceColorDiff(this.white)){
+                    if (testTile.getPiece().isDiffColor(this.white)){
                         this.legalMoves.add(testPos);
                     }
                     //sinon, ne rien faire
@@ -68,4 +68,5 @@ public class Rook extends Piece {
     public static String toShortString(){
         return "R";
     }
+    public char toShortName(){ return SHORTNAME; }
 }

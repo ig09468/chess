@@ -3,6 +3,7 @@ package logique;
 import pieces.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static utils.ChessUtils.toCoord;
 
@@ -28,6 +29,10 @@ public class Tile {
 
     }
 
+    public Point getPosition() {
+        return position;
+    }
+
     /**
      * isInCheckTestWithPawn - Vérifie si le roi est en échec en vérifiant s'il y a un Pawn.
      * @param boardInstance La plateau actuel
@@ -42,7 +47,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().compPieceColorDiff(isWhite) &&  testTile.getPiece() instanceof Pawn)
+            if(testTile.getPiece().isDiffColor(isWhite) &&  testTile.getPiece() instanceof Pawn)
             {
                 return true;
             }
@@ -51,7 +56,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece() instanceof Pawn)
+            if(testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof Pawn)
                 return true;
         }
         return false;
@@ -70,7 +75,7 @@ public class Tile {
         {
             testPos = new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]);
             testTile = boardInstance.getTile(testPos);
-            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece() instanceof King) {
+            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof King) {
                 return true;
             }
 
@@ -107,7 +112,7 @@ public class Tile {
                     testPos = toCoord(new Point(testPos.x + modifierX, testPos.y + modifierY));
                 }
                 else {
-                    if (testTile.getPiece().compPieceColorDiff(isWhite) && (testTile.getPiece() instanceof Rook || testTile.getPiece() instanceof Queen)) {
+                    if (testTile.getPiece().isDiffColor(isWhite) && (testTile.getPiece() instanceof Rook || testTile.getPiece() instanceof Queen)) {
                         return true;
                     }
                     break;
@@ -145,7 +150,7 @@ public class Tile {
                     testPos = toCoord( new Point(testPos.x + modifierX,  testPos.y + modifierY));
                 }
                 else {
-                    if (testTile.getPiece().compPieceColorDiff(isWhite) && (testTile.getPiece() instanceof Bishop || testTile.getPiece() instanceof Queen)) {
+                    if (testTile.getPiece().isDiffColor(isWhite) && (testTile.getPiece() instanceof Bishop || testTile.getPiece() instanceof Queen)) {
                         return true;
                     }
                     break;
@@ -163,21 +168,21 @@ public class Tile {
      */
     public boolean isAttackedByKnight(Board boardInstance, boolean isWhite){
 
-    int initPositions [][]= {{1,2},{2,1},{1,-2},{-2,1},{-1,2},{2,-1},{-1,-2},{-2,-1}};
-    Point testPos;
-    Tile testTile;
+        int initPositions [][]= {{1,2},{2,1},{1,-2},{-2,1},{-1,2},{2,-1},{-1,-2},{-2,-1}};
+        Point testPos;
+        Tile testTile;
 
 
-    for(int i=0; i<initPositions.length; i++)
-    {
-        testPos = toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
-        testTile = boardInstance.getTile(testPos);
-        if(testTile!=null && testTile.isOccupied() && testTile.getPiece().compPieceColorDiff(isWhite) && testTile.getPiece()instanceof Knight )
+        for(int i=0; i<initPositions.length; i++)
         {
-            return true;
+            testPos = toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
+            testTile = boardInstance.getTile(testPos);
+            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece()instanceof Knight )
+            {
+                return true;
+            }
         }
-    }
-			return false;
+        return false;
     }
 
     /**
@@ -207,6 +212,56 @@ public class Tile {
      */
     public Piece getPiece(){
         return piece;
+    }
+
+    /**
+     * Capture la piece de la case
+     * @return Retourne son caractère de reconnaissance
+     */
+    public char capture()
+    {
+        char pieceType = ' ';
+        if(isOccupied())
+        {
+            piece.setOnBoard(false);
+            pieceType = piece.toShortName();
+        }
+        piece = null;
+        return pieceType;
+    }
+
+    /**
+     * Repose une pièce capturée pour la remise en arrière
+     * @param pieceType Type de la pièce capturée
+     */
+    public void uncapture(Board board, char pieceType) throws UnsupportedOperationException
+    {
+        if(isOccupied())
+            throw new UnsupportedOperationException("Case occupée");
+        ArrayList<Piece> arr = board.searchPieces(pieceType, this.position);
+        for(Piece piece : arr)
+        {
+            if(!piece.getOnBoard())
+            {
+                this.piece = piece;
+                this.piece.setOnBoard(true);
+            }
+        }
+    }
+
+    /**
+     * Place une piece sur la case
+     * @param piece Piece placée
+     * @return caractère de la piece capturée si elle exsite, ' ' sinon
+     */
+    public char setPiece(Piece piece)
+    {
+        char capt = ' ';
+        if(isOccupied())
+            capt = capture();
+        this.piece = piece;
+        this.piece.setOnBoard(true);
+        return capt;
     }
 
 

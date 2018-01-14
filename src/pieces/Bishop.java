@@ -28,7 +28,7 @@ public class Bishop extends Piece {
 
 
         /* Vérification de boardInstance */
-        if(boardInstance!=null) {
+        if(boardInstance==null) {
             System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
             return;
         }
@@ -63,7 +63,7 @@ public class Bishop extends Piece {
                 }else
                     {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile!=null && testTile.getPiece().compPieceColorDiff(this.white)) {
+                    if (testTile!=null && testTile.getPiece().isDiffColor(this.white)) {
                         this.legalMoves.add(testPos);
                     }
                         //sinon, ne rien faire
@@ -80,4 +80,5 @@ public class Bishop extends Piece {
     public static String toShortString(){
         return "B";
     }
+    public char toShortName(){ return SHORTNAME; }
 }

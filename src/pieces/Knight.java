@@ -24,7 +24,7 @@ public class Knight extends Piece {
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance){
-        if(boardInstance!=null) {
+        if(boardInstance==null) {
             System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
             return;
         }
@@ -42,4 +42,5 @@ public class Knight extends Piece {
     public static String toShortString(){
         return "N";
     }
+    public char toShortName(){ return SHORTNAME; }
 }

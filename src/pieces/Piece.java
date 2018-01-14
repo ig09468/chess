@@ -86,11 +86,11 @@ public abstract class Piece {
     }
 
     /**
-     * compPieceColorDiff - Compare la couleur entre 2 pièces
+     * isDiffColor - Compare la couleur entre 2 pièces
      * @param isWhite La couleur de l'autre piece
      * @return Retourne Vrai si les pièces sont de couleurs différentes sinon faux
      */
-    public boolean compPieceColorDiff(boolean isWhite){
+    public boolean isDiffColor(boolean isWhite){
         return this.isWhite() != isWhite;
     }
     /**
@@ -107,7 +107,7 @@ public abstract class Piece {
             testTile = boardInstance.getTile(testPos);
             if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
                 this.legalMoves.add(testPos);
-            } else if (testTile!=null && testTile.getPiece().compPieceColorDiff(this.white)) {
+            } else if (testTile!=null && testTile.getPiece().isDiffColor(this.white)) {
                 this.legalMoves.add(testPos);
             }
         }
@@ -120,11 +120,36 @@ public abstract class Piece {
 
     public void decimateLegalMovesCheck(Board boardInstance){
         if(this.legalMoves.size()>0){
-
+            King king = boardInstance.getKing(this.white);
         }
     }
 
     public String toString() {
         return white + " " + position.toString();
+    }
+
+    public boolean isAttacked(Board boardInstance) {
+        Tile currTile = boardInstance.getTile(this.position);
+        return currTile != null && currTile.isAttacked(boardInstance, this.white);
+    }
+
+    public void setOnBoard(boolean onBoard)
+    {
+        this.onBoard = onBoard;
+    }
+
+    public abstract char toShortName();
+
+
+    /**
+     * Modifie la position de la piece vers la case concernée
+     * @param tile Case d'arrivée
+     * @return Caractère de la pièce capturée si besoin, ' ' sinon
+     */
+    public char moveTo(Tile tile)
+    {
+        this.position = tile.getPosition();
+        this.hasNeverMoved = false;
+        return tile.setPiece(this);
     }
 }

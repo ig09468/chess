@@ -3,6 +3,8 @@ package utils;
 import pieces.*;
 
 import java.awt.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 public class ChessUtils {
     /**
@@ -59,9 +61,18 @@ public class ChessUtils {
      * @return
      */
     public static Point toCoord(String position){
+        position = position.toLowerCase();
         if (position.length()== 2)
             if (position.charAt(0) >= 'a' && position.charAt(0) <= 'h' && position.charAt(1) >= 1 && position.charAt(1) <= 8)
                     return new Point((int)position.charAt(0) - (int)('a'), (int)position.charAt(1) - (int)'1');
         return null;
+    }
+
+    public static <T> boolean testForAll(T[] testArray, Function<T, Boolean> function)
+    {
+        for(T value: testArray)
+            if(!function.apply(value))
+                return false;
+        return true;
     }
 }

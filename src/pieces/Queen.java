@@ -24,7 +24,7 @@ public class Queen extends Piece {
      * @param boardInstance
      */
     public void calculateLegalMoves(Board boardInstance) {
-        if (boardInstance != null) {
+        if (boardInstance == null) {
             System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
             return;
         }
@@ -74,7 +74,7 @@ public class Queen extends Piece {
                     testPos = toCoord(new Point(testPos.x + modifierX, testPos.y + modifierY));
                 } else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
-                    if (testTile.getPiece().compPieceColorDiff(this.white)) {
+                    if (testTile.getPiece().isDiffColor(this.white)) {
                         this.legalMoves.add(testPos);
                     }
                     //sinon, ne rien faire
@@ -90,5 +90,6 @@ public class Queen extends Piece {
     public static String toShortString() {
         return "Q";
     }
+    public char toShortName(){ return SHORTNAME; }
 
 }

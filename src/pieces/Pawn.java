@@ -44,7 +44,7 @@ public class Pawn extends Piece {
     public void calculateLegalMoves(Board boardInstance){
 
         /* Vérification de boardInstance */
-        if(boardInstance!=null) {
+        if(boardInstance==null) {
             System.out.print("console.error : Board undefined for calculateLegalMoves()\n");
             return;
         }
@@ -83,7 +83,7 @@ public class Pawn extends Piece {
 
                 /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
                    si c'est bon, on l'ajoute à la liste */
-                if(testTile.getPiece().compPieceColorDiff(isWhite())){
+                if(testTile.getPiece().isDiffColor(isWhite())){
                     this.legalMoves.add(testPos);
                 }else
                 {
@@ -121,5 +121,6 @@ public class Pawn extends Piece {
     public static String toShortString(){
         return "P";
     }
+    public char toShortName(){ return SHORTNAME; }
 
 }

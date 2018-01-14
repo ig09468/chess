@@ -1,6 +1,5 @@
 package logique;
 
-import pieces.Pawn;
 import utils.ChessUtils;
 
 import java.awt.*;
@@ -15,11 +14,12 @@ public class Mouvement {
     private boolean bigCastle;
     private boolean smallCastle;
     private boolean priseEnPassant;
+    private boolean hasNeverMoved;
 
-    public static final Mouvement BIGCASTLE = new Mouvement(null, null, ' ', ' ', true, false, false);
-    public static final Mouvement SMALLCASTLE = new Mouvement(null, null, ' ', ' ', false, true, false);
+    public static final Mouvement BIGCASTLE = new Mouvement(null, null, ' ', ' ', true, false, false, true);
+    public static final Mouvement SMALLCASTLE = new Mouvement(null, null, ' ', ' ', false, true, false, true);
 
-    private Mouvement(Point newPos, Point oldPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant) {
+    private Mouvement(Point newPos, Point oldPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
         this.newPos = newPos;
         this.oldPos = oldPos;
         this.capture = capture;
@@ -27,26 +27,27 @@ public class Mouvement {
         this.bigCastle = isBigCastle;
         this.smallCastle = isSmallCastle;
         this.priseEnPassant = isPriseEnPassant;
+        this.hasNeverMoved = hasNeverMoved;
     }
 
-    public Mouvement(Point oldPos, Point newPos, char capture, char promotion)
+    public Mouvement(Point oldPos, Point newPos, char capture, char promotion, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, capture, promotion, false, false, false);
+        this(oldPos, newPos, capture, promotion, false, false, false, hasNeverMoved);
     }
 
-    public Mouvement(Point oldPos, Point newPos, char capture)
+    public Mouvement(Point oldPos, Point newPos, char capture, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, capture, ' ');
+        this(oldPos, newPos, capture, ' ', hasNeverMoved);
     }
 
-    public Mouvement(Point oldPos, Point newPos)
+    public Mouvement(Point oldPos, Point newPos, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, ' ');
+        this(oldPos, newPos, ' ', hasNeverMoved);
     }
 
     public static Mouvement priseEnPassant(Point oldPos, Point newPos)
     {
-        return new Mouvement(oldPos, newPos, ' ', ' ', false, false, true);
+        return new Mouvement(oldPos, newPos, ' ', ' ', false, false, true, false);
     }
 
     public Point getNewPos() {
@@ -76,6 +77,8 @@ public class Mouvement {
     public boolean isPriseEnPassant() {
         return priseEnPassant;
     }
+
+    public boolean hasNeverMoved(){return hasNeverMoved;}
 
     public String toString()
     {
