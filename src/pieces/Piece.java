@@ -121,6 +121,18 @@ public abstract class Piece {
     public void decimateLegalMovesCheck(Board boardInstance){
         if(this.legalMoves.size()>0){
             King king = boardInstance.getKing(this.white);
+            for(int i=0; i<this.legalMoves.size();)
+            {
+                boardInstance.moveWithoutCheck(this.position, this.legalMoves.get(i));
+                if(king.isAttacked(boardInstance))
+                {
+                    this.legalMoves.remove(i);
+                }else
+                {
+                    ++i;
+                }
+                boardInstance.undo();
+            }
         }
     }
 
