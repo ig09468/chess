@@ -123,7 +123,7 @@ public abstract class Piece {
             King king = boardInstance.getKing(this.white);
             for(int i=0; i<this.legalMoves.size();)
             {
-                boardInstance.moveWithoutCheck(this.position, this.legalMoves.get(i));
+                boardInstance.move(this.position, this.legalMoves.get(i));
                 if(king.isAttacked(boardInstance))
                 {
                     this.legalMoves.remove(i);

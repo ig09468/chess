@@ -85,14 +85,17 @@ public class Board {
                     {
                         if(((King) piece).getBigCastle() && (oldPos.x-newPos.x) == 2)
                         {
-
+                            this.moveWithoutCheck(new Point(0,piece.getPosition().y), new Point(3, piece.getPosition().y));
+                            this.moveHistory.add(MoveRecord.BIGCASTLE);
+                        }else if(((King) piece).getLittleCastle() && (oldPos.x-newPos.x) == -2)
+                        {
+                            this.moveWithoutCheck(new Point(7,piece.getPosition().y), new Point(5, piece.getPosition().y));
+                            this.moveHistory.add(MoveRecord.SMALLCASTLE);
                         }
                     }
                 }
 
             }
-
-
         }
     }
 
@@ -113,7 +116,12 @@ public class Board {
 
     public void moveWithoutCheck(Point oldPos, Point newPos)
     {
-
+        Tile oldTile = getTile(oldPos);
+        Tile newTile = getTile(newPos);
+        if(oldTile != null && oldTile.isOccupied() && newTile != null)
+        {
+            oldTile.getPiece().moveTo(newTile);
+        }
     }
 
     //Annule le dernier mouvement
