@@ -5,7 +5,7 @@ import utils.ChessUtils;
 import java.awt.*;
 import java.util.Arrays;
 
-public class Mouvement {
+public class MoveRecord {
 
     private Point newPos;
     private Point oldPos;
@@ -16,10 +16,10 @@ public class Mouvement {
     private boolean priseEnPassant;
     private boolean hasNeverMoved;
 
-    public static final Mouvement BIGCASTLE = new Mouvement(null, null, ' ', ' ', true, false, false, true);
-    public static final Mouvement SMALLCASTLE = new Mouvement(null, null, ' ', ' ', false, true, false, true);
+    public static final MoveRecord BIGCASTLE = new MoveRecord(null, null, ' ', ' ', true, false, false, true);
+    public static final MoveRecord SMALLCASTLE = new MoveRecord(null, null, ' ', ' ', false, true, false, true);
 
-    private Mouvement(Point newPos, Point oldPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
+    private MoveRecord(Point newPos, Point oldPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
         this.newPos = newPos;
         this.oldPos = oldPos;
         this.capture = capture;
@@ -30,24 +30,24 @@ public class Mouvement {
         this.hasNeverMoved = hasNeverMoved;
     }
 
-    public Mouvement(Point oldPos, Point newPos, char capture, char promotion, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, char capture, char promotion, boolean hasNeverMoved)
     {
         this(oldPos, newPos, capture, promotion, false, false, false, hasNeverMoved);
     }
 
-    public Mouvement(Point oldPos, Point newPos, char capture, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, char capture, boolean hasNeverMoved)
     {
         this(oldPos, newPos, capture, ' ', hasNeverMoved);
     }
 
-    public Mouvement(Point oldPos, Point newPos, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, boolean hasNeverMoved)
     {
         this(oldPos, newPos, ' ', hasNeverMoved);
     }
 
-    public static Mouvement priseEnPassant(Point oldPos, Point newPos)
+    public static MoveRecord priseEnPassant(Point oldPos, Point newPos)
     {
-        return new Mouvement(oldPos, newPos, ' ', ' ', false, false, true, false);
+        return new MoveRecord(oldPos, newPos, ' ', ' ', false, false, true, false);
     }
 
     public Point getNewPos() {

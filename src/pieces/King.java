@@ -115,7 +115,7 @@ public class King extends Piece {
         newPos = ChessUtils.toCoord(newPos);
         if(boardInstance == null || oldPos == null || newPos == null)
             throw new IllegalArgumentException();
-        boardInstance.moveOnly(oldPos, newPos);
+        boardInstance.move(oldPos, newPos);
         boolean check = this.isAttacked(boardInstance);
         boardInstance.undo();
         return check;

@@ -28,7 +28,7 @@ public class Board {
     private boolean isWhiteTurn;
 
     //Historique des mouvements
-    private ArrayList<Mouvement> moveHistory;
+    private ArrayList<MoveRecord> moveHistory;
 
     //Liste des tiles
     private Tile[][] tileList = new Tile[8][8];
@@ -57,30 +57,55 @@ public class Board {
     }
 
     //Bouge une piece de son ancienne coordonée vers une nouvelle
-    public void moveOnly(Point oldPos, Point newPos)
+    public void move(Point oldPos, Point newPos)
     {
         Tile oldTile = getTile(oldPos);
         Tile newTile = getTile(newPos);
 
         if(oldTile != null && newTile != null && oldTile.isOccupied())
         {
+            Piece piece = oldTile.getPiece();
+            if(!piece.isLegalMovesCalculated())
+            {
+                piece.calculateLegalMoves(this);
+            }
+            if(piece.isLegalMove(newPos))
+            {
+                char capt = piece.moveTo(newTile);
+                if(piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn)piece).getCapturePos(newPos.x)))
+                {
+                    this.moveHistory.add(MoveRecord.priseEnPassant(oldPos, newPos));
+                }
+                else
+                {
+                    if(piece instanceof King)
+                    {
+                        if(((King) piece).getBigCastle() && (oldPos.x-newPos.x) == 2)
+                        {
+
+                        }
+                    }
+                }
+
+            }
+
 
         }
     }
 
-    public void moveOnly(Point oldPos, String newPos)
+    public void move(Point oldPos, String newPos)
     {
-        moveOnly(oldPos, ChessUtils.toCoord(newPos));
+        move(oldPos, ChessUtils.toCoord(newPos));
     }
 
-    public void moveOnly(String oldPos, Point newPos)
+    public void move(String oldPos, Point newPos)
     {
-        moveOnly(ChessUtils.toCoord(oldPos), newPos);
+        move(ChessUtils.toCoord(oldPos), newPos);
     }
 
-    public void moveOnly(String oldPos, String newPos)
+    public void move(String oldPos, String newPos)
     {
-        moveOnly(ChessUtils.toCoord(oldPos), ChessUtils.toCoord(newPos));
+        move(ChessUtils.toCoord(oldPos), ChessUtils.toCoord(newPos));
     }
 
     //Annule le dernier mouvement
@@ -143,5 +168,19 @@ public class Board {
                 pieces.add(piece);
         }
         return pieces;
+    }
+
+    public boolean enPassant(Tile oldTile, Tile newTile, Point enPassantCapturePos)
+    {
+        if(enPassantCapturePos != null && oldTile != null && newTile != null)
+        {
+            Tile captureTile = this.getTile(enPassantCapturePos);
+            if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() instanceof Pawn && ((Pawn) captureTile.getPiece()).getLastMoveIsDouble())
+            {
+                captureTile.capture();
+                return true;
+            }
+        }
+        return false;
     }
 }

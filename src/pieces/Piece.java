@@ -152,4 +152,14 @@ public abstract class Piece {
         this.hasNeverMoved = false;
         return tile.setPiece(this);
     }
+
+    public boolean isLegalMove(Point newPos)
+    {
+        return this.legalMoves.contains(newPos);
+    }
+
+    public boolean isLegalMovesCalculated()
+    {
+        return legalMovesCalculated;
+    }
 }

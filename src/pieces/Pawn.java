@@ -123,4 +123,14 @@ public class Pawn extends Piece {
     }
     public char toShortName(){ return SHORTNAME; }
 
+    public Point getCapturePos(int xCoord)
+    {
+        for(Point p : enPassantCapturePos)
+        {
+            if(p.x == xCoord)
+                return p;
+        }
+        return null;
+    }
+
 }
