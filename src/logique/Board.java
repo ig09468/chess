@@ -10,20 +10,22 @@ import java.util.ArrayList;
 
 public class Board {
 
+    public static String[] defaultBoard = {
+            "WRWNWBWQWKWBWNWR",
+            "WPWPWPWPWPWPWPWP",
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000",
+            "BPBPBPBPBPBPBPBP",
+            "BRBNBBBQBKBBBNBR"
+    };
+
     //Cases sélectionnées
     private ArrayList<Tile> selectedTiles;
 
     //Pièce sélectionée
     private Piece selectedPiece;
-
-    //Booléen désignant si le plateau a changé depuis la dernière évaluation de son état
-    private boolean changed;
-
-    //Etat du plateau
-    private String etat;
-
-    //Booléen désignant le plateau comme étant en buffer ou non
-    private boolean isBuffer;
 
     //Booléen désignant si c'est le tour des blancs
     private boolean isWhiteTurn;
@@ -32,27 +34,81 @@ public class Board {
     private ArrayList<MoveRecord> moveHistory;
 
     //Liste des tiles
-    private Tile[][] tileList = new Tile[8][8];
+    private Tile[][] tileList;
 
     //Liste des pièces
     private ArrayList<Piece> pieceList;
 
     //Rois
-    private King whiteKing = null;
-    private King blackKing = null;
+    private King whiteKing;
+    private King blackKing;
 
     //Etat actuel
-    ArrayList<Byte> boardState;
+    private ArrayList<Byte> boardState;
 
     //Candidat prise en passant
-    private Pawn candidatPriseEnPassant = null;
+    private Pawn candidatPriseEnPassant;
 
     //Pion necessitant une promotion
-    private Pawn needPromotion = null;
+    private Pawn needPromotion;
 
     public Board()
     {
+        tileList = new Tile[8][8];
+        pieceList= new ArrayList<>();
+        moveHistory=new ArrayList<>();
+        boardState=null;
+        whiteKing=null;
+        blackKing=null;
+        candidatPriseEnPassant=null;
+        needPromotion=null;
+        isWhiteTurn=true;
 
+        boolean isWhite;
+        Piece piece;
+        for(int x=0; x<8;x++)
+        {
+            for(int y=0; y<8;y++)
+            {
+                isWhite = defaultBoard[y].charAt(2*x) == 'W';
+                switch(defaultBoard[y].charAt(2*x+1))
+                {
+                    case Bishop.SHORTNAME:
+                        piece = new Bishop(isWhite, new Point(x,y));
+                        break;
+                    case Rook.SHORTNAME:
+                        piece = new Rook(isWhite, new Point(x,y));
+                        break;
+                    case Queen.SHORTNAME:
+                        piece = new Queen(isWhite, new Point(x,y));
+                        break;
+                    case King.SHORTNAME:
+                        piece = new King(isWhite, new Point(x,y));
+                        if(isWhite)
+                        {
+                            whiteKing=(King)piece;
+                        }else
+                        {
+                            blackKing=(King)piece;
+                        }
+                        break;
+                    case Pawn.SHORTNAME:
+                        piece = new Pawn(isWhite, new Point(x,y));
+                        break;
+                    case Knight.SHORTNAME:
+                        piece = new Knight(isWhite, new Point(x,y));
+                        break;
+                    default:
+                        piece = null;
+                        break;
+                }
+                tileList[x][y] = new Tile(new Point(x,y),piece);
+                if(piece != null)
+                {
+                    pieceList.add(piece);
+                }
+            }
+        }
     }
 
     public boolean compareToEnPassantCandidat(Pawn piece)
@@ -103,6 +159,7 @@ public class Board {
             {
                 boolean neverMovedBefore = piece.getHasNeverMoved();
                 char capt = piece.moveTo(newTile, false, this);
+                oldTile.moveOut();
                 char promoted = ' ';
                 if(piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn)piece).getCapturePos(newPos.x)))
                 {
