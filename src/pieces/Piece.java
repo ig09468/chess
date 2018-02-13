@@ -158,10 +158,20 @@ public abstract class Piece {
      * @param tile Case d'arrivée
      * @return Caractère de la pièce capturée si besoin, ' ' sinon
      */
-    public char moveTo(Tile tile)
+    public char moveTo(Tile tile, Board board)
     {
+        return moveTo(tile, hasNeverMoved, board);
+    }
+
+    public char moveTo(Tile tile, boolean hasNeverMoved, Board board)
+    {
+        Tile oldTile = board.getTile(position);
+        if(oldTile != null && oldTile.isOccupied())
+        {
+            oldTile.moveOut();
+        }
         this.position = tile.getPosition();
-        this.hasNeverMoved = false;
+        this.hasNeverMoved = hasNeverMoved;
         return tile.setPiece(this);
     }
 

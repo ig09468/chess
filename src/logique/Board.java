@@ -102,7 +102,7 @@ public class Board {
             if(piece.isLegalMove(newPos))
             {
                 boolean neverMovedBefore = piece.getHasNeverMoved();
-                char capt = piece.moveTo(newTile);
+                char capt = piece.moveTo(newTile, false, this);
                 char promoted = ' ';
                 if(piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn)piece).getCapturePos(newPos.x)))
                 {
@@ -156,13 +156,76 @@ public class Board {
         Tile newTile = getTile(newPos);
         if(oldTile != null && oldTile.isOccupied() && newTile != null)
         {
-            oldTile.getPiece().moveTo(newTile);
+            oldTile.getPiece().moveTo(newTile, false, this);
         }
     }
 
     //Annule le dernier mouvement
     public void undo()
     {
+        this.isWhiteTurn = !this.isWhiteTurn;
+        MoveRecord rec = this.moveHistory.get(this.moveHistory.size()-1);
+        Tile oldTile = getTile(rec.getOldPos());
+        Tile newTile = getTile(rec.getNewPos());
+        if(oldTile!= null && newTile != null && newTile.isOccupied() && !oldTile.isOccupied())
+        {
+            if(rec.isBigCastle())
+            {
+                int posy = rec.getOldPos().y;
+                Tile rookTile = getTile(new Point(3, posy));
+                Tile originalRookTile = getTile(new Point(0, posy));
+                if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
+                {
+                    newTile.getPiece().moveTo(oldTile, true, this);
+                    rookTile.getPiece().moveTo(originalRookTile, true, this);
+                }
+            }else if(rec.isSmallCastle())
+            {
+                int posy = rec.getOldPos().y;
+                Tile rookTile = getTile(new Point(5, posy));
+                Tile originalRookTile = getTile(new Point(7, posy));
+                if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
+                {
+                    newTile.getPiece().moveTo(oldTile, true, this);
+                    rookTile.getPiece().moveTo(originalRookTile, true, this);
+                }
+            }else if(rec.isPriseEnPassant())
+            {
+                int posx = rec.getNewPos().x;
+                Point capturePos = new Point(posx, rec.getOldPos().y);
+                newTile.getPiece().moveTo(oldTile, false, this);
+                Tile captureTile = getTile(capturePos);
+                if(captureTile != null)
+                {
+                    captureTile.uncapture(this, 'P');
+                }
+            }else
+            {
+                Piece piece = newTile.getPiece();
+
+                if(rec.getPromotion() != ' ')
+                {
+                    int pieceListIndex = pieceList.indexOf(piece);
+                    piece = new Pawn(piece.isWhite(), piece.getPosition());
+                    if(pieceListIndex!=-1)
+                    {
+                        pieceList.set(pieceListIndex, piece);
+                        piece.moveTo(oldTile, false, this);
+
+                    }
+                }else
+                {
+                    piece.moveTo(oldTile, rec.hasNeverMoved(), this);
+                }
+
+                if(rec.getCapture() != ' ')
+                {
+                    newTile.uncapture(this, rec.getCapture());
+                }
+            }
+        }
+        moveHistory.remove(moveHistory.size()-1);
+        this.boardState = null;
 
     }
 

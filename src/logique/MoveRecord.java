@@ -7,8 +7,9 @@ import java.util.Arrays;
 
 public class MoveRecord {
 
-    private Point newPos;
+
     private Point oldPos;
+    private Point newPos;
     private char capture;
     private char promotion;
     private boolean bigCastle;
@@ -19,9 +20,9 @@ public class MoveRecord {
     public static final MoveRecord BIGCASTLE = new MoveRecord(null, null, ' ', ' ', true, false, false, true);
     public static final MoveRecord SMALLCASTLE = new MoveRecord(null, null, ' ', ' ', false, true, false, true);
 
-    private MoveRecord(Point newPos, Point oldPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
-        this.newPos = newPos;
+    private MoveRecord(Point oldPos, Point newPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
         this.oldPos = oldPos;
+        this.newPos = newPos;
         this.capture = capture;
         this.promotion = promotion;
         this.bigCastle = isBigCastle;

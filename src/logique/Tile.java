@@ -264,6 +264,11 @@ public class Tile {
         return capt;
     }
 
+    public void moveOut()
+    {
+        this.piece = null;
+    }
+
 
 
 }
