@@ -10,9 +10,6 @@ public class Pawn extends Piece {
 
     public static final char SHORTNAME = 'P';
 
-    /* Stock si le dernier mouvement est double. */
-    private boolean LastMoveIsDouble;
-
     /* Tableau de prise passants position */
     private ArrayList <Point> enPassantCapturePos;
 
@@ -25,15 +22,6 @@ public class Pawn extends Piece {
 
     public Pawn(boolean white, Point position) {
         super(white, position);
-        this.LastMoveIsDouble=false;
-    }
-
-    /**
-     * Donne le si le dernier mouvement est double.
-     * @return LastMoveIsDouble
-     */
-    public boolean getLastMoveIsDouble(){
-        return LastMoveIsDouble;
     }
 
 
@@ -93,7 +81,7 @@ public class Pawn extends Piece {
                     /* Recherche de la prise en passant */
                     if(testTile.getPiece() instanceof Pawn){
                         Pawn testTilePiece= (Pawn)testTile.getPiece();
-                        if(testTile.isOccupied() && testTilePiece.LastMoveIsDouble)
+                        if(testTile.isOccupied() && boardInstance.compareToEnPassantCandidat(testTilePiece))
                         {
                             /* Enregistre les coordonnées de la pièce mangée */
                             this.enPassantCapturePos.add(testPos2);

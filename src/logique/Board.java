@@ -1,6 +1,7 @@
 package logique;
 
 
+import layout.Controller;
 import pieces.*;
 import utils.ChessUtils;
 
@@ -43,9 +44,20 @@ public class Board {
     //Etat actuel
     ArrayList<Byte> boardState;
 
+    //Candidat prise en passant
+    private Pawn candidatPriseEnPassant = null;
+
+    //Pion necessitant une promotion
+    private Pawn needPromotion = null;
+
     public Board()
     {
 
+    }
+
+    public boolean compareToEnPassantCandidat(Pawn piece)
+    {
+        return piece == candidatPriseEnPassant;
     }
 
     //Récupère la case aux coordonnées spécifiées
@@ -59,8 +71,23 @@ public class Board {
         return getTile(ChessUtils.toCoord(position));
     }
 
-    //Bouge une piece de son ancienne coordonée vers une nouvelle
+    public boolean promotionNeeded()
+    {
+        return needPromotion!= null;
+    }
+
+    public boolean isWhiteTurn()
+    {
+        return isWhiteTurn;
+    }
+
     public void move(Point oldPos, Point newPos)
+    {
+        move(oldPos, newPos, true);
+    }
+
+    //Bouge une piece de son ancienne coordonée vers une nouvelle
+    public void move(Point oldPos, Point newPos, boolean promotionCheck)
     {
         Tile oldTile = getTile(oldPos);
         Tile newTile = getTile(newPos);
@@ -74,7 +101,9 @@ public class Board {
             }
             if(piece.isLegalMove(newPos))
             {
+                boolean neverMovedBefore = piece.getHasNeverMoved();
                 char capt = piece.moveTo(newTile);
+                char promoted = ' ';
                 if(piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn)piece).getCapturePos(newPos.x)))
                 {
                     this.moveHistory.add(MoveRecord.priseEnPassant(oldPos, newPos));
@@ -92,8 +121,15 @@ public class Board {
                             this.moveWithoutCheck(new Point(7,piece.getPosition().y), new Point(5, piece.getPosition().y));
                             this.moveHistory.add(MoveRecord.SMALLCASTLE);
                         }
+                    }else if(promotionCheck && piece instanceof Pawn && newPos.y == (piece.isWhite() ? 7 : 0))
+                    {
+                        needPromotion = (Pawn)piece;
+                        promoted = Controller.currentGame.askPromotion();
                     }
                 }
+                this.moveHistory.add(new MoveRecord(oldPos, newPos, capt, promoted, neverMovedBefore));
+                candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Pawn)piece : null;
+                afterMove();
 
             }
         }
@@ -191,7 +227,7 @@ public class Board {
         if(enPassantCapturePos != null && oldTile != null && newTile != null)
         {
             Tile captureTile = this.getTile(enPassantCapturePos);
-            if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() instanceof Pawn && ((Pawn) captureTile.getPiece()).getLastMoveIsDouble())
+            if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() == candidatPriseEnPassant)
             {
                 captureTile.capture();
                 return true;
@@ -213,7 +249,7 @@ public class Board {
         /*Record :
             24 octets max
             Case vide -     0
-            Pawn -          1W1LastMoveIsDouble
+            Pawn -          1W1IsEnPassantCandidat
             Rook -          1W01HasNeverMoved
             Bishop -        1W0010
             Knight -        1W0011
@@ -243,7 +279,7 @@ public class Board {
                     if(piece instanceof Pawn)
                     {
                         toggle <<= 2;
-                        toggle += ((Pawn)piece).getLastMoveIsDouble() ? 3 : 2;
+                        toggle += (compareToEnPassantCandidat((Pawn)piece)) ? 3 : 2;
                         cursorInc = 4;
                     }else if(piece instanceof Rook)
                     {
@@ -296,4 +332,90 @@ public class Board {
         }
         return bytes;
     }
+
+    public char promote(char piece)
+    {
+        if(promotionNeeded())
+        {
+            Piece newPiece;
+            boolean pieceColorWhite = needPromotion.isWhite();
+            Point position = needPromotion.getPosition();
+            Tile promTile = getTile(position);
+            int pieceListIndex = pieceList.indexOf(needPromotion);
+            if(promTile != null && promTile.isOccupied() && pieceListIndex!= -1)
+            {
+                switch(piece)
+                {
+                    case Bishop.SHORTNAME:
+                        newPiece = new Bishop(pieceColorWhite, position);
+                        break;
+                    case Rook.SHORTNAME:
+                        newPiece = new Rook(pieceColorWhite, position);
+                        break;
+                    case Queen.SHORTNAME:
+                        newPiece = new Queen(pieceColorWhite, position);
+                        break;
+                    case Knight.SHORTNAME:
+                        newPiece = new Knight(pieceColorWhite, position);
+                        break;
+                    default:
+                        return ' ';
+                }
+                promTile.setPiece(newPiece);
+                pieceList.set(pieceListIndex, newPiece);
+                return piece;
+            }
+        }
+        return ' ';
+    }
+
+    private void afterMove()
+    {
+        this.boardState = null;
+        Controller.showGame();
+        this.isWhiteTurn = !this.isWhiteTurn;
+        this.calculateStatus();
+    }
+
+    public boolean calculateStatus()
+    {
+        Board that = this;
+        if(ChessUtils.testForAll((Piece[])pieceList.toArray(), (Piece piece)->{
+            if(piece.isDiffColor(isWhiteTurn))
+                return true;
+            else
+            {
+                if(piece.isOnBoard())
+                {
+                    piece.calculateLegalMoves(that);
+                    return piece.canMove();
+                }else
+                    return false;
+            }
+        }))
+        {
+            if(isWhiteTurn)
+            {
+                if(whiteKing.isAttacked(this))
+                {
+                    Controller.checkMate(false);
+                }else
+                {
+                    Controller.staleMate();
+                }
+            }else
+            {
+                if(blackKing.isAttacked(this))
+                {
+                    Controller.checkMate(true);
+                }else
+                {
+                    Controller.staleMate();
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
 }
