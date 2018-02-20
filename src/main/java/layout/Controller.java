@@ -1,13 +1,18 @@
 package layout;
 
+import javafx.scene.image.Image;
+import logique.Board;
 import logique.Game;
 
 public class Controller {
     public static Game currentGame;
+    public static CheckerBoard checkerboard;
 
     public static void showGame()
     {
-        //TODO Affiche le plateau de la partie en cours
+        Board board = currentGame.getBoard();
+        checkerboard.updateBoard(board);
+
     }
 
     public static void checkMate(boolean whiteWin)
@@ -24,5 +29,10 @@ public class Controller {
     public static void staleMate()
     {
         //TODO Affiche le pat (pas de vainqueur)
+    }
+
+    private static void loadPiecesImage()
+    {
+
     }
 }
