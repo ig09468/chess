@@ -193,4 +193,8 @@ public abstract class Piece {
     {
         return legalMovesCalculated && legalMoves.size() > 0;
     }
+
+    public ArrayList<Point> getLegalMoves() {
+        return legalMoves;
+    }
 }

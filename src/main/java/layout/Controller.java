@@ -8,6 +8,19 @@ public class Controller {
     public static Game currentGame;
     public static CheckerBoard checkerboard;
 
+    public static void newGame(String whiteAIComboText, String blackAIComboText, String delayText)
+    {
+        try
+        {
+            currentGame = new Game(Parametres.stringToDifficultyLevel(whiteAIComboText), Parametres.stringToDifficultyLevel(blackAIComboText), Integer.valueOf(delayText));
+            showGame();
+        }catch(NumberFormatException e)
+        {
+            e.printStackTrace();
+            System.err.println("Number format error in delay");
+        }
+    }
+
     public static void showGame()
     {
         Board board = currentGame.getBoard();
