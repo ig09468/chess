@@ -34,8 +34,9 @@ public class Knight extends Piece {
         Tile testTile;
         int initPositions [][]= {{1, 2}, {1, -2}, {2, 1}, {2, -1}, {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1}};
         legalMovesCalculatedForKnightAndKing(boardInstance,initPositions);
-        this.decimateLegalMovesCheck(boardInstance);
         this.legalMovesCalculated = true;
+        this.decimateLegalMovesCheck(boardInstance);
+
     }
 
 

@@ -61,8 +61,9 @@ public class Rook extends Piece {
                 }
             }
         }
-        this.decimateLegalMovesCheck(boardInstance);
         this.legalMovesCalculated = true;
+        this.decimateLegalMovesCheck(boardInstance);
+
     }
 
     public static String toShortString(){

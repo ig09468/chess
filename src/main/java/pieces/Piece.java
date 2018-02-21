@@ -45,6 +45,7 @@ public abstract class Piece {
         this.position=position;
         this.onBoard = true;
         this.hasNeverMoved = true;
+        this.legalMoves = new ArrayList<>();
 
     }
 
@@ -123,7 +124,7 @@ public abstract class Piece {
             King king = boardInstance.getKing(this.white);
             for(int i=0; i<this.legalMoves.size();)
             {
-                boardInstance.move(this.position, this.legalMoves.get(i), false);
+                boardInstance.move(this.position, this.legalMoves.get(i), false, true);
                 if(king.isAttacked(boardInstance))
                 {
                     this.legalMoves.remove(i);

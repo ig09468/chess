@@ -22,6 +22,7 @@ public class Pawn extends Piece {
 
     public Pawn(boolean white, Point position) {
         super(white, position);
+        enPassantCapturePos = new ArrayList<>();
     }
 
 
@@ -91,8 +92,9 @@ public class Pawn extends Piece {
                     }
                 }
             }
-            this.decimateLegalMovesCheck(boardInstance);
             this.legalMovesCalculated = true;
+            this.decimateLegalMovesCheck(boardInstance);
+
         }
 
 

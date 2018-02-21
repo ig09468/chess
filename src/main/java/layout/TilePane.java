@@ -35,7 +35,8 @@ public class TilePane extends StackPane {
             Piece piece = board.getPiece(coord);
             if(piece != null)
             {
-                if(piece.isLegalMovesCalculated())
+
+                if(!piece.isLegalMovesCalculated())
                     piece.calculateLegalMoves(board);
                 if(piece.canMove())
                 {
@@ -44,6 +45,8 @@ public class TilePane extends StackPane {
                 {
                     Controller.checkerboard.setCannotMove(coord);
                 }
+
+                System.out.println(piece.getLegalMoves());
             }
         }
     }

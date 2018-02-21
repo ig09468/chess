@@ -55,7 +55,7 @@ public class CheckerBoard extends GridPane {
             topLabel.setAlignment(Pos.CENTER);
             for(int row=0; row<8; row++)
             {
-                TilePane tile = tiles[column][7-row] = new TilePane(column, row);
+                TilePane tile = tiles[column][7-row] = new TilePane(column, 7-row);
                 Rectangle rect = new Rectangle(60,60);
                 rect.setStroke(Color.TRANSPARENT);
                 rect.setStrokeType(StrokeType.INSIDE);
@@ -147,13 +147,14 @@ public class CheckerBoard extends GridPane {
             }
         }
         highlights = new ArrayList<>(legalMoves);
-        Rectangle highlight = new Rectangle(60,60);
-        highlight.setStroke(Color.TRANSPARENT);
-        highlight.setStrokeType(StrokeType.INSIDE);
-        highlight.setStrokeWidth(0);
-        highlight.setFill(Color.LIGHTGREEN);
+
         for(Point p: highlights)
         {
+            Rectangle highlight = new Rectangle(60,60);
+            highlight.setStroke(Color.TRANSPARENT);
+            highlight.setStrokeType(StrokeType.INSIDE);
+            highlight.setStrokeWidth(0);
+            highlight.setFill(Color.LIGHTGREEN);
             TilePane tile = tiles[p.x][p.y];
             tile.getChildren().add(1, highlight);
         }

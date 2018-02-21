@@ -72,8 +72,9 @@ public class Bishop extends Piece {
                     }
             }
         }
-        this.decimateLegalMovesCheck(boardInstance);
         this.legalMovesCalculated = true;
+        this.decimateLegalMovesCheck(boardInstance);
+
     }
 
 

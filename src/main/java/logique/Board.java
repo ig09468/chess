@@ -139,11 +139,11 @@ public class Board {
 
     public void move(Point oldPos, Point newPos)
     {
-        move(oldPos, newPos, true);
+        move(oldPos, newPos, true, false);
     }
 
     //Bouge une piece de son ancienne coordonée vers une nouvelle
-    public void move(Point oldPos, Point newPos, boolean promotionCheck)
+    public void move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer)
     {
         Tile oldTile = getTile(oldPos);
         Tile newTile = getTile(newPos);
@@ -186,7 +186,7 @@ public class Board {
                 }
                 this.moveHistory.add(new MoveRecord(oldPos, newPos, capt, promoted, neverMovedBefore));
                 candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Pawn)piece : null;
-                afterMove();
+                afterMove(isBuffer);
 
             }
         }
@@ -220,70 +220,72 @@ public class Board {
     //Annule le dernier mouvement
     public void undo()
     {
-        this.isWhiteTurn = !this.isWhiteTurn;
-        MoveRecord rec = this.moveHistory.get(this.moveHistory.size()-1);
-        Tile oldTile = getTile(rec.getOldPos());
-        Tile newTile = getTile(rec.getNewPos());
-        if(oldTile!= null && newTile != null && newTile.isOccupied() && !oldTile.isOccupied())
+        if(this.moveHistory.size() > 0)
         {
-            if(rec.isBigCastle())
+            this.isWhiteTurn = !this.isWhiteTurn;
+            MoveRecord rec = this.moveHistory.get(this.moveHistory.size()-1);
+            Tile oldTile = getTile(rec.getOldPos());
+            Tile newTile = getTile(rec.getNewPos());
+            if(oldTile!= null && newTile != null && newTile.isOccupied() && !oldTile.isOccupied())
             {
-                int posy = rec.getOldPos().y;
-                Tile rookTile = getTile(new Point(3, posy));
-                Tile originalRookTile = getTile(new Point(0, posy));
-                if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
+                if(rec.isBigCastle())
                 {
-                    newTile.getPiece().moveTo(oldTile, true, this);
-                    rookTile.getPiece().moveTo(originalRookTile, true, this);
-                }
-            }else if(rec.isSmallCastle())
-            {
-                int posy = rec.getOldPos().y;
-                Tile rookTile = getTile(new Point(5, posy));
-                Tile originalRookTile = getTile(new Point(7, posy));
-                if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
-                {
-                    newTile.getPiece().moveTo(oldTile, true, this);
-                    rookTile.getPiece().moveTo(originalRookTile, true, this);
-                }
-            }else if(rec.isPriseEnPassant())
-            {
-                int posx = rec.getNewPos().x;
-                Point capturePos = new Point(posx, rec.getOldPos().y);
-                newTile.getPiece().moveTo(oldTile, false, this);
-                Tile captureTile = getTile(capturePos);
-                if(captureTile != null)
-                {
-                    captureTile.uncapture(this, 'P');
-                }
-            }else
-            {
-                Piece piece = newTile.getPiece();
-
-                if(rec.getPromotion() != ' ')
-                {
-                    int pieceListIndex = pieceList.indexOf(piece);
-                    piece = new Pawn(piece.isWhite(), piece.getPosition());
-                    if(pieceListIndex!=-1)
+                    int posy = rec.getOldPos().y;
+                    Tile rookTile = getTile(new Point(3, posy));
+                    Tile originalRookTile = getTile(new Point(0, posy));
+                    if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
                     {
-                        pieceList.set(pieceListIndex, piece);
-                        piece.moveTo(oldTile, false, this);
-
+                        newTile.getPiece().moveTo(oldTile, true, this);
+                        rookTile.getPiece().moveTo(originalRookTile, true, this);
+                    }
+                }else if(rec.isSmallCastle())
+                {
+                    int posy = rec.getOldPos().y;
+                    Tile rookTile = getTile(new Point(5, posy));
+                    Tile originalRookTile = getTile(new Point(7, posy));
+                    if(rookTile != null && rookTile.isOccupied() && originalRookTile != null)
+                    {
+                        newTile.getPiece().moveTo(oldTile, true, this);
+                        rookTile.getPiece().moveTo(originalRookTile, true, this);
+                    }
+                }else if(rec.isPriseEnPassant())
+                {
+                    int posx = rec.getNewPos().x;
+                    Point capturePos = new Point(posx, rec.getOldPos().y);
+                    newTile.getPiece().moveTo(oldTile, false, this);
+                    Tile captureTile = getTile(capturePos);
+                    if(captureTile != null)
+                    {
+                        captureTile.uncapture(this, 'P');
                     }
                 }else
                 {
-                    piece.moveTo(oldTile, rec.hasNeverMoved(), this);
-                }
+                    Piece piece = newTile.getPiece();
 
-                if(rec.getCapture() != ' ')
-                {
-                    newTile.uncapture(this, rec.getCapture());
+                    if(rec.getPromotion() != ' ')
+                    {
+                        int pieceListIndex = pieceList.indexOf(piece);
+                        piece = new Pawn(piece.isWhite(), piece.getPosition());
+                        if(pieceListIndex!=-1)
+                        {
+                            pieceList.set(pieceListIndex, piece);
+                            piece.moveTo(oldTile, false, this);
+
+                        }
+                    }else
+                    {
+                        piece.moveTo(oldTile, rec.hasNeverMoved(), this);
+                    }
+
+                    if(rec.getCapture() != ' ')
+                    {
+                        newTile.uncapture(this, rec.getCapture());
+                    }
                 }
             }
+            moveHistory.remove(moveHistory.size()-1);
+            this.boardState = null;
         }
-        moveHistory.remove(moveHistory.size()-1);
-        this.boardState = null;
-
     }
 
     //Récupère le roi de la couleur spécifiée
@@ -489,10 +491,11 @@ public class Board {
         return ' ';
     }
 
-    private void afterMove()
+    private void afterMove(boolean isBuffer)
     {
         this.boardState = null;
-        Controller.showGame();
+        if(!isBuffer)
+            Controller.showGame();
         this.isWhiteTurn = !this.isWhiteTurn;
         this.calculateStatus();
     }
@@ -500,7 +503,9 @@ public class Board {
     public boolean calculateStatus()
     {
         Board that = this;
-        if(ChessUtils.testForAll((Piece[])pieceList.toArray(), (Piece piece)->{
+        Piece[] pieceArray = new Piece[pieceList.size()];
+        pieceList.toArray(pieceArray);
+        if(ChessUtils.testForAll(pieceArray, (Piece piece)->{
             if(piece.isDiffColor(isWhiteTurn))
                 return true;
             else
