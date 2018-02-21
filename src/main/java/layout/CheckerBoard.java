@@ -4,16 +4,11 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import logique.Board;
@@ -62,7 +57,7 @@ public class CheckerBoard extends GridPane {
                 rect.setStrokeWidth(0);
                 rect.setFill(whiteTile ? Color.BEIGE : Color.DARKSLATEGRAY);
                 tile.getChildren().add(rect);
-                tile.setOnMouseClicked((e)->{tile.showLegalMoves();});
+                tile.setOnMouseClicked((e)-> tile.clickHandle());
                 whiteTile = !whiteTile;
                 board.add(tile, column, row);
             }
@@ -108,6 +103,7 @@ public class CheckerBoard extends GridPane {
                     if(currTile != null)
                     {
                         TilePane tile = tiles[i][j];
+                        tile.setBoard(boardInstance);
                         ObservableList<Node> nodesInTile = tile.getChildren();
                         if(nodesInTile!= null)
                         {
@@ -125,7 +121,7 @@ public class CheckerBoard extends GridPane {
                                 imgview.setPreserveRatio(true);
                                 imgview.setFitHeight(60);
                                 nodesInTile.add(imgview);
-                                tile.setBoard(boardInstance);
+
                             }
                         }
 
@@ -136,41 +132,33 @@ public class CheckerBoard extends GridPane {
         }
     }
 
-    public void setHighlight(ArrayList<Point> legalMoves) {
-        if(highlights != null)
-        {
-            for(Point p: highlights)
-            {
-                TilePane tile = tiles[p.x][p.y];
-                if(tile.getChildrenUnmodifiable().size() >=2)
-                    tile.getChildren().remove(1);
-            }
-        }
+    public void setHighlight(Point selectedPiece, ArrayList<Point> legalMoves) {
+        resetHighlight();
         highlights = new ArrayList<>(legalMoves);
 
         for(Point p: highlights)
         {
             Rectangle highlight = new Rectangle(60,60);
-            highlight.setStroke(Color.TRANSPARENT);
-            highlight.setStrokeType(StrokeType.INSIDE);
-            highlight.setStrokeWidth(0);
-            highlight.setFill(Color.LIGHTGREEN);
             TilePane tile = tiles[p.x][p.y];
+            highlight.setStroke(tile.isOccupied() ? Color.ORANGE : Color.GREEN);
+            highlight.setStrokeType(StrokeType.INSIDE);
+            highlight.setStrokeWidth(2);
+            highlight.setFill(tile.isOccupied() ? Color.YELLOW :Color.LIGHTGREEN);
             tile.getChildren().add(1, highlight);
         }
+
+        Rectangle highlight = new Rectangle(60,60);
+        TilePane tile = tiles[selectedPiece.x][selectedPiece.y];
+        highlight.setStroke(Color.BLUE);
+        highlight.setStrokeType(StrokeType.INSIDE);
+        highlight.setStrokeWidth(2);
+        highlight.setFill(Color.LIGHTBLUE);
+        tile.getChildren().add(1, highlight);
 
     }
 
     public void setCannotMove(Point coord) {
-        if(highlights != null)
-        {
-            for(Point p: highlights)
-            {
-                TilePane tile = tiles[p.x][p.y];
-                if(tile.getChildrenUnmodifiable().size() >=2)
-                    tile.getChildren().remove(1);
-            }
-        }
+        resetHighlight();
         highlights = new ArrayList<>();
         Rectangle highlight = new Rectangle(60,60);
         highlight.setStroke(Color.TRANSPARENT);
@@ -179,5 +167,18 @@ public class CheckerBoard extends GridPane {
         highlight.setFill(Color.RED);
         highlights.add(coord);
         tiles[coord.x][coord.y].getChildren().add(1,highlight);
+    }
+
+    public void resetHighlight() {
+        if(highlights != null)
+        {
+            for(Point p: highlights)
+            {
+                TilePane tile = tiles[p.x][p.y];
+                if(tile.getChildrenUnmodifiable().size() >=2)
+                    tile.getChildren().remove(1);
+            }
+            highlights.clear();
+        }
     }
 }

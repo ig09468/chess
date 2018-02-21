@@ -107,9 +107,9 @@ public abstract class Piece {
             testPos = toCoord(new Point(this.position.x + initPositions[direction][0], this.position.y + initPositions[direction][1]));
             testTile = boardInstance.getTile(testPos);
             if (testTile!=null && !testTile.isOccupied()) { //la case est sur la table et inoccupée
-                this.legalMoves.add(testPos);
+                this.legalMoves.add((Point)testPos.clone());
             } else if (testTile!=null && testTile.getPiece().isDiffColor(this.white)) {
-                this.legalMoves.add(testPos);
+                this.legalMoves.add((Point)testPos.clone());
             }
         }
     }
@@ -197,5 +197,10 @@ public abstract class Piece {
 
     public ArrayList<Point> getLegalMoves() {
         return legalMoves;
+    }
+
+    public void resetLegalMoves() {
+        this.legalMovesCalculated=false;
+        this.legalMoves.clear();
     }
 }

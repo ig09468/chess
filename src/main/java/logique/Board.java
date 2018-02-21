@@ -47,7 +47,7 @@ public class Board {
     private ArrayList<Byte> boardState;
 
     //Candidat prise en passant
-    private Pawn candidatPriseEnPassant;
+    private Point candidatPriseEnPassant;
 
     //Pion necessitant une promotion
     private Pawn needPromotion;
@@ -113,7 +113,7 @@ public class Board {
 
     public boolean compareToEnPassantCandidat(Pawn piece)
     {
-        return piece == candidatPriseEnPassant;
+        return piece.getPosition().equals(candidatPriseEnPassant);
     }
 
     //Récupère la case aux coordonnées spécifiées
@@ -158,12 +158,13 @@ public class Board {
             if(piece.isLegalMove(newPos))
             {
                 boolean neverMovedBefore = piece.getHasNeverMoved();
+                boolean enPassantrec = piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn) piece).getCapturePos(newPos.x));
                 char capt = piece.moveTo(newTile, false, this);
                 oldTile.moveOut();
                 char promoted = ' ';
-                if(piece instanceof Pawn && this.enPassant(oldTile, newTile, ((Pawn)piece).getCapturePos(newPos.x)))
+                if(piece instanceof Pawn && enPassantrec)
                 {
-                    this.moveHistory.add(MoveRecord.priseEnPassant(oldPos, newPos));
+                    this.moveHistory.add(MoveRecord.priseEnPassant(oldPos, newPos, candidatPriseEnPassant));
                 }
                 else
                 {
@@ -172,11 +173,11 @@ public class Board {
                         if(((King) piece).getBigCastle() && (oldPos.x-newPos.x) == 2)
                         {
                             this.moveWithoutCheck(new Point(0,piece.getPosition().y), new Point(3, piece.getPosition().y));
-                            this.moveHistory.add(MoveRecord.BIGCASTLE);
+                            this.moveHistory.add(MoveRecord.BIGCASTLE(candidatPriseEnPassant));
                         }else if(((King) piece).getLittleCastle() && (oldPos.x-newPos.x) == -2)
                         {
                             this.moveWithoutCheck(new Point(7,piece.getPosition().y), new Point(5, piece.getPosition().y));
-                            this.moveHistory.add(MoveRecord.SMALLCASTLE);
+                            this.moveHistory.add(MoveRecord.SMALLCASTLE(candidatPriseEnPassant));
                         }
                     }else if(promotionCheck && piece instanceof Pawn && newPos.y == (piece.isWhite() ? 7 : 0))
                     {
@@ -184,8 +185,8 @@ public class Board {
                         promoted = Controller.currentGame.askPromotion();
                     }
                 }
-                this.moveHistory.add(new MoveRecord(oldPos, newPos, capt, promoted, neverMovedBefore));
-                candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Pawn)piece : null;
+                this.moveHistory.add(new MoveRecord(oldPos, newPos, candidatPriseEnPassant,capt, promoted, neverMovedBefore));
+                candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Point)piece.getPosition().clone() : null;
                 afterMove(isBuffer);
 
             }
@@ -282,7 +283,9 @@ public class Board {
                         newTile.uncapture(this, rec.getCapture());
                     }
                 }
+                candidatPriseEnPassant = rec.getEnPassantCandidate();
             }
+
             moveHistory.remove(moveHistory.size()-1);
             this.boardState = null;
         }
@@ -346,11 +349,14 @@ public class Board {
 
     public boolean enPassant(Tile oldTile, Tile newTile, Point enPassantCapturePos)
     {
+
         if(enPassantCapturePos != null && oldTile != null && newTile != null)
         {
+
             Tile captureTile = this.getTile(enPassantCapturePos);
-            if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() == candidatPriseEnPassant)
+            if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() instanceof Pawn && this.compareToEnPassantCandidat((Pawn)captureTile.getPiece()))
             {
+                System.out.println(enPassantCapturePos);
                 captureTile.capture();
                 return true;
             }
@@ -494,10 +500,14 @@ public class Board {
     private void afterMove(boolean isBuffer)
     {
         this.boardState = null;
-        if(!isBuffer)
-            Controller.showGame();
         this.isWhiteTurn = !this.isWhiteTurn;
-        this.calculateStatus();
+        if(!isBuffer)
+        {
+            this.pieceList.forEach(Piece::resetLegalMoves);
+            Controller.showGame();
+            this.calculateStatus();
+        }
+        this.selectedPiece = null;
     }
 
     public boolean calculateStatus()
@@ -543,4 +553,11 @@ public class Board {
         return true;
     }
 
+    public void setSelectedPiece(Piece selectedPiece) {
+        this.selectedPiece = selectedPiece;
+    }
+
+    public Piece getSelectedPiece() {
+        return selectedPiece;
+    }
 }

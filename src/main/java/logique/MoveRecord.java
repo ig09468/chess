@@ -16,11 +16,18 @@ public class MoveRecord {
     private boolean smallCastle;
     private boolean priseEnPassant;
     private boolean hasNeverMoved;
+    private Point enPassantCandidate;
 
-    public static final MoveRecord BIGCASTLE = new MoveRecord(null, null, ' ', ' ', true, false, false, true);
-    public static final MoveRecord SMALLCASTLE = new MoveRecord(null, null, ' ', ' ', false, true, false, true);
+    public static MoveRecord BIGCASTLE(Point enPassantCandidate)
+    {
+        return new MoveRecord(null, null, enPassantCandidate,' ', ' ', true, false, false, true);
+    }
+    public static MoveRecord SMALLCASTLE(Point enPassantCandidate)
+    {
+        return new MoveRecord(null, null, enPassantCandidate, ' ', ' ', false, true, false, true);
+    }
 
-    private MoveRecord(Point oldPos, Point newPos, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
+    private MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
         this.oldPos = oldPos;
         this.newPos = newPos;
         this.capture = capture;
@@ -29,26 +36,27 @@ public class MoveRecord {
         this.smallCastle = isSmallCastle;
         this.priseEnPassant = isPriseEnPassant;
         this.hasNeverMoved = hasNeverMoved;
+        this.enPassantCandidate = enPassantCandidate;
     }
 
-    public MoveRecord(Point oldPos, Point newPos, char capture, char promotion, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate,char capture, char promotion, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, capture, promotion, false, false, false, hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, capture, promotion, false, false, false, hasNeverMoved);
     }
 
-    public MoveRecord(Point oldPos, Point newPos, char capture, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, capture, ' ', hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, capture, ' ', hasNeverMoved);
     }
 
-    public MoveRecord(Point oldPos, Point newPos, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, boolean hasNeverMoved)
     {
-        this(oldPos, newPos, ' ', hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, ' ', hasNeverMoved);
     }
 
-    public static MoveRecord priseEnPassant(Point oldPos, Point newPos)
+    public static MoveRecord priseEnPassant(Point oldPos, Point newPos, Point enPassantCandidate)
     {
-        return new MoveRecord(oldPos, newPos, ' ', ' ', false, false, true, false);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, false, true, false);
     }
 
     public Point getNewPos() {
@@ -57,6 +65,10 @@ public class MoveRecord {
 
     public Point getOldPos() {
         return oldPos;
+    }
+
+    public Point getEnPassantCandidate() {
+        return enPassantCandidate;
     }
 
     public char getCapture() {

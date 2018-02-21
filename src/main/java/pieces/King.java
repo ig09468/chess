@@ -48,12 +48,12 @@ public class King extends Piece {
         this.decimateLegalMovesCheck(boardInstance);
         if((testPos = this.checkBigCastle(boardInstance))!=null)
         {
-            this.legalMoves.add(testPos);
+            this.legalMoves.add((Point)testPos.clone());
             this.bigCastle = true;
         }
         if((testPos = this.checkLittleCastle(boardInstance))!=null)
         {
-            this.legalMoves.add(testPos);
+            this.legalMoves.add((Point)testPos.clone());
             this.littleCastle = true;
         }
 

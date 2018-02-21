@@ -28,26 +28,40 @@ public class TilePane extends StackPane {
         this.board = board;
     }
 
-    public void showLegalMoves()
+    public void clickHandle()
     {
         if(board != null)
         {
             Piece piece = board.getPiece(coord);
-            if(piece != null)
+
+            //On a cliqué sur une piece qui doit jouer, on affiche les mouvements légaux
+            if(piece != null && piece.isWhite() == board.isWhiteTurn())
             {
 
                 if(!piece.isLegalMovesCalculated())
                     piece.calculateLegalMoves(board);
                 if(piece.canMove())
                 {
-                    Controller.checkerboard.setHighlight(piece.getLegalMoves());
+                    Controller.checkerboard.setHighlight(coord, piece.getLegalMoves());
                 }else
                 {
                     Controller.checkerboard.setCannotMove(coord);
                 }
+                board.setSelectedPiece(piece);
+            }else //On a cliqué sur une case vide ou une piece adverse, on vérifie si on peut effectuer un mouvement
+            {
 
-                System.out.println(piece.getLegalMoves());
+                Piece pieceSelected = board.getSelectedPiece();
+                if(pieceSelected != null && pieceSelected.isLegalMove(coord))
+                {
+                    Controller.checkerboard.resetHighlight();
+                    board.move(pieceSelected.getPosition(), coord);
+                }
             }
         }
+    }
+
+    public boolean isOccupied() {
+        return board != null && board.getPiece(coord) != null;
     }
 }

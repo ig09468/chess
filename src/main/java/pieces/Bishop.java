@@ -51,7 +51,7 @@ public class Bishop extends Piece {
                 testTile = boardInstance.getTile(testPos);
 
                 if (testTile!=null && !testTile.isOccupied()) {
-                    this.legalMoves.add(testPos);
+                    this.legalMoves.add((Point)testPos.clone());
                     /*                      */
                     switch(direction) {
                         case 0: modifierX=1; modifierY=1; break;
@@ -64,7 +64,7 @@ public class Bishop extends Piece {
                     {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
                     if (testTile!=null && testTile.getPiece().isDiffColor(this.white)) {
-                        this.legalMoves.add(testPos);
+                        this.legalMoves.add((Point)testPos.clone());
                     }
                         //sinon, ne rien faire
                         //sortir de la boucle

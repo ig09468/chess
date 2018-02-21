@@ -41,7 +41,7 @@ public class Rook extends Piece {
             for (int distance = 0; testPos != null && distance<7; distance++) {
                 testTile = boardInstance.getTile(testPos);
                 if (!testTile.isOccupied()) {
-                    this.legalMoves.add(testPos);
+                    this.legalMoves.add((Point)testPos.clone());
                     switch(direction) {
                         case 0: modifierY=-1; break;
                         case 1: modifierY=1; break;
@@ -53,7 +53,7 @@ public class Rook extends Piece {
                 else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves
                     if (testTile.getPiece().isDiffColor(this.white)){
-                        this.legalMoves.add(testPos);
+                        this.legalMoves.add((Point)testPos.clone());
                     }
                     //sinon, ne rien faire
                     //sortir de la boucle

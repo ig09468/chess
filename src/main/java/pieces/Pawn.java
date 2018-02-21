@@ -50,7 +50,7 @@ public class Pawn extends Piece {
 
         /*Vérification de la case devant le pion */
         if(testTile!=null && !testTile.isOccupied()) {
-            this.legalMoves.add(testPos);
+            this.legalMoves.add((Point)testPos.clone());
 
             /* Nouvelle attribution de valeur en y */
             testPos.setLocation(testPos.x,testPos.y + posY);
@@ -58,13 +58,13 @@ public class Pawn extends Piece {
 
             /* Test si la deuxième case est disponible */
             if(this.hasNeverMoved && testTile!=null && !testTile.isOccupied()){
-                this.legalMoves.add(testPos);
+                this.legalMoves.add((Point)testPos.clone());
             }
         }
 
         /* Affectation de la nouvelle position */
-        testPos.setLocation(this.position.x + 1, this.position.y + ((this.white) ? 1 : -1) );
-        testTile=boardInstance.getTile(testPos);
+        testPos.setLocation(this.position.x+1, this.position.y + ((this.white) ? 1 : -1) );
+        testTile=boardInstance.getTile((Point)testPos.clone());
 
         /* Vérification si testTile existe bien */
         if (testTile!=null){
@@ -73,35 +73,55 @@ public class Pawn extends Piece {
                 /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
                    si c'est bon, on l'ajoute à la liste */
                 if(testTile.getPiece().isDiffColor(isWhite())){
-                    this.legalMoves.add(testPos);
-                }else
-                {
-                    /* Nouveau point à test, pour savoir l'une des pièces peuvent être prise enPassant */
-                    Point testPos2 = new Point(this.position.x-1, this.position.y);
-                    testTile = boardInstance.getTile(testPos2);
-                    /* Recherche de la prise en passant */
-                    if(testTile.getPiece() instanceof Pawn){
-                        Pawn testTilePiece= (Pawn)testTile.getPiece();
-                        if(testTile.isOccupied() && boardInstance.compareToEnPassantCandidat(testTilePiece))
-                        {
-                            /* Enregistre les coordonnées de la pièce mangée */
-                            this.enPassantCapturePos.add(testPos2);
-                            /* Enregistre le mouvement légal */
-                            this.legalMoves.add(testPos);
-                        }
-                    }
+                    this.legalMoves.add((Point)testPos.clone());
                 }
+            }else
+            {
+                /* Nouveau point à test, pour savoir l'une des pièces peuvent être prise enPassant */
+                Point testPos2 = new Point(this.position.x+1, this.position.y);
+                testTile = boardInstance.getTile(testPos2);
+                /* Recherche de la prise en passant */
+                addEnPassantLegalMove(boardInstance, testPos, testTile, testPos2);
             }
-            this.legalMovesCalculated = true;
-            this.decimateLegalMovesCheck(boardInstance);
+        }
+        /* Affectation de la nouvelle position */
+        testPos.setLocation(this.position.x-1, this.position.y + ((this.white) ? 1 : -1) );
+        testTile=boardInstance.getTile((Point)testPos.clone());
 
+        /* Vérification si testTile existe bien */
+        if (testTile!=null){
+            if(testTile.isOccupied()){
+
+                /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
+                   si c'est bon, on l'ajoute à la liste */
+                if(testTile.getPiece().isDiffColor(isWhite())){
+                    this.legalMoves.add((Point)testPos.clone());
+                }
+            }else
+            {
+                /* Nouveau point à test, pour savoir l'une des pièces peuvent être prise enPassant */
+                Point testPos2 = new Point(this.position.x-1, this.position.y);
+                testTile = boardInstance.getTile(testPos2);
+                /* Recherche de la prise en passant */
+                addEnPassantLegalMove(boardInstance, testPos, testTile, testPos2);
+            }
         }
 
+        this.legalMovesCalculated = true;
+        this.decimateLegalMovesCheck(boardInstance);
+    }
 
-
-
-
-
+    private void addEnPassantLegalMove(Board boardInstance, Point testPos, Tile testTile, Point testPos2) {
+        if(testTile.getPiece() instanceof Pawn){
+            Pawn testTilePiece= (Pawn)testTile.getPiece();
+            if(testTile.isOccupied() && boardInstance.compareToEnPassantCandidat(testTilePiece))
+            {
+                /* Enregistre les coordonnées de la pièce mangée */
+                this.enPassantCapturePos.add((Point)testPos2.clone());
+                /* Enregistre le mouvement légal */
+                this.legalMoves.add((Point)testPos.clone());
+            }
+        }
     }
 
     /**
