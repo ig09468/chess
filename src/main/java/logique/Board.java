@@ -257,7 +257,7 @@ public class Board {
                     Tile captureTile = getTile(capturePos);
                     if(captureTile != null)
                     {
-                        captureTile.uncapture(this, 'P');
+                        captureTile.uncapture(this, 'P', !isWhiteTurn);
                     }
                 }else
                 {
@@ -280,7 +280,7 @@ public class Board {
 
                     if(rec.getCapture() != ' ')
                     {
-                        newTile.uncapture(this, rec.getCapture());
+                        newTile.uncapture(this, rec.getCapture(), !isWhiteTurn);
                     }
                 }
                 candidatPriseEnPassant = rec.getEnPassantCandidate();
@@ -336,12 +336,12 @@ public class Board {
         return pieces;
     }
 
-    public ArrayList<Piece> searchPieces(char pieceType, Point pos)
+    public ArrayList<Piece> searchPieces(char pieceType, Point pos, boolean isWhite)
     {
-        ArrayList<Piece> pieces = new ArrayList<Piece>();
+        ArrayList<Piece> pieces = new ArrayList<>();
         for(Piece piece : pieceList)
         {
-            if(piece.toShortName() == pieceType && pos.equals(piece.getPosition()))
+            if(piece.toShortName() == pieceType && pos.equals(piece.getPosition()) && piece.isWhite()==isWhite)
                 pieces.add(piece);
         }
         return pieces;
@@ -356,7 +356,6 @@ public class Board {
             Tile captureTile = this.getTile(enPassantCapturePos);
             if(captureTile != null && !newTile.isOccupied() && captureTile.getPiece() instanceof Pawn && this.compareToEnPassantCandidat((Pawn)captureTile.getPiece()))
             {
-                System.out.println(enPassantCapturePos);
                 captureTile.capture();
                 return true;
             }
@@ -512,6 +511,7 @@ public class Board {
 
     public boolean calculateStatus()
     {
+        //TODO Ajouter la regle des 50 coups et le nul par materiel insuffisant
         Board that = this;
         Piece[] pieceArray = new Piece[pieceList.size()];
         pieceList.toArray(pieceArray);
@@ -523,9 +523,9 @@ public class Board {
                 if(piece.isOnBoard())
                 {
                     piece.calculateLegalMoves(that);
-                    return piece.canMove();
+                    return !piece.canMove();
                 }else
-                    return false;
+                    return true;
             }
         }))
         {

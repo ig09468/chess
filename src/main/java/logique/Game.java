@@ -1,6 +1,7 @@
 package logique;
 
 import ia.AI;
+import layout.PromotionStage;
 
 public class Game {
     private Board board;
@@ -35,9 +36,10 @@ public class Game {
 
     public char showPromotion()
     {
-        char promotion=' ';
-        //TODO Ouvre une fenetre modale pour choisir la promotion
-        // promotion = ...
+        char promotion;
+
+        PromotionStage pStage = new PromotionStage(board.isWhiteTurn());
+        promotion = pStage.promotion;
 
         return board.promote(promotion);
     }

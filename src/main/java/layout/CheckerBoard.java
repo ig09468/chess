@@ -26,8 +26,7 @@ public class CheckerBoard extends GridPane {
     private ArrayList<Point> highlights;
 
     private static Image piecesImage=null;
-    private static final int WHITE_OFFSET=0;
-    private static final int BLACK_OFFSET=1;
+
 
     public CheckerBoard()
     {
@@ -81,50 +80,37 @@ public class CheckerBoard extends GridPane {
     public void updateBoard(Board boardInstance) {
         if(boardInstance != null)
         {
-            if(piecesImage ==null)
+            piecesImage = Controller.loadPiecesImage();
+            if(piecesImage !=null)
             {
-                URL imageURL = getClass().getClassLoader().getResource("chess_pieces.png");
-
-                if (imageURL != null) {
-                    piecesImage = new Image(imageURL.toExternalForm());
-                }else
+                resetHighlight();
+                for(int i=0; i<8;i++)
                 {
-                    System.err.println("Can't load resource chess_pieces.png");
-                    return;
-                }
-            }
-            int pieceHeight = (int)(piecesImage.getHeight()/2);
-            int pieceWidth = (int)(piecesImage.getWidth()/6);
-            for(int i=0; i<8;i++)
-            {
-                for(int j=0;j<8;j++)
-                {
-                    Tile currTile =  boardInstance.getTile(new Point(i,j));
-                    if(currTile != null)
-                    {
-                        TilePane tile = tiles[i][j];
-                        tile.setBoard(boardInstance);
-                        ObservableList<Node> nodesInTile = tile.getChildren();
-                        if(nodesInTile!= null)
-                        {
-                            if(nodesInTile.size() >=2)
-                            {
-                                nodesInTile.remove(1,nodesInTile.size());
-                            }
-                            if(currTile.isOccupied())
-                            {
-                                Piece piece = currTile.getPiece();
-                                ImageView imgview = new ImageView();
-                                imgview.setImage(piecesImage);
-                                Rectangle2D rect = new Rectangle2D("KQBNRP".indexOf(piece.toShortName())*pieceWidth,(piece.isWhite() ? WHITE_OFFSET:BLACK_OFFSET)*pieceHeight ,pieceWidth, pieceHeight);
-                                imgview.setViewport(rect);
-                                imgview.setPreserveRatio(true);
-                                imgview.setFitHeight(60);
-                                nodesInTile.add(imgview);
+                    for(int j=0;j<8;j++) {
+                        Tile currTile = boardInstance.getTile(new Point(i, j));
+                        if (currTile != null) {
+                            TilePane tile = tiles[i][j];
+                            tile.setBoard(boardInstance);
+                            ObservableList<Node> nodesInTile = tile.getChildren();
+                            if (nodesInTile != null) {
+                                if (nodesInTile.size() >= 2) {
+                                    nodesInTile.remove(1, nodesInTile.size());
+                                }
+                                if (currTile.isOccupied()) {
+                                    Piece piece = currTile.getPiece();
+                                    ImageView imgview = new ImageView();
+                                    imgview.setSmooth(true);
+                                    imgview.setImage(piecesImage);
+                                    Rectangle2D rect = Controller.getViewRectangle(piece.toShortName(), piece.isWhite());
+                                    imgview.setViewport(rect);
+                                    imgview.setPreserveRatio(true);
+                                    imgview.setFitHeight(60);
+                                    nodesInTile.add(imgview);
 
+                                }
                             }
+
                         }
-
                     }
 
                 }
@@ -144,6 +130,7 @@ public class CheckerBoard extends GridPane {
             highlight.setStrokeType(StrokeType.INSIDE);
             highlight.setStrokeWidth(2);
             highlight.setFill(tile.isOccupied() ? Color.YELLOW :Color.LIGHTGREEN);
+            highlight.setOpacity(0.7);
             tile.getChildren().add(1, highlight);
         }
 
@@ -153,7 +140,9 @@ public class CheckerBoard extends GridPane {
         highlight.setStrokeType(StrokeType.INSIDE);
         highlight.setStrokeWidth(2);
         highlight.setFill(Color.LIGHTBLUE);
+        highlight.setOpacity(0.7);
         tile.getChildren().add(1, highlight);
+        highlights.add(selectedPiece);
 
     }
 
@@ -161,10 +150,11 @@ public class CheckerBoard extends GridPane {
         resetHighlight();
         highlights = new ArrayList<>();
         Rectangle highlight = new Rectangle(60,60);
-        highlight.setStroke(Color.TRANSPARENT);
+        highlight.setStroke(Color.DARKRED);
         highlight.setStrokeType(StrokeType.INSIDE);
-        highlight.setStrokeWidth(0);
+        highlight.setStrokeWidth(2);
         highlight.setFill(Color.RED);
+        highlight.setOpacity(0.7);
         highlights.add(coord);
         tiles[coord.x][coord.y].getChildren().add(1,highlight);
     }

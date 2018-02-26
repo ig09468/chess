@@ -42,7 +42,7 @@ public class Parametres extends GridPane {
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
         minDelayField.setMaxWidth(30);
 
-        newGameButton.setOnAction((e)->{Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(), minDelayField.getText());});
+        newGameButton.setOnAction((e)-> Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(),whiteAICheckbox.isSelected(),blackAICheckBox.isSelected(), minDelayField.getText()));
     }
 
     public static int stringToDifficultyLevel(String diffString)

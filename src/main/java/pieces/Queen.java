@@ -32,45 +32,48 @@ public class Queen extends Piece {
         this.legalMoves.clear();
         Point testPos;
         Tile testTile;
-        int modifierX = 0, modifierY = 0;
+        int modifierX, modifierY;
         int initPositions[][] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
         for (int direction = 0; direction < 8; direction++) {
+            modifierX = 0;
+            modifierY = 0;
+            switch (direction) {
+                case 0:
+                    modifierY = -1;
+                    break;
+                case 1:
+                    modifierY = 1;
+                    break;
+                case 2:
+                    modifierX = 1;
+                    break;
+                case 3:
+                    modifierX = -1;
+                    break;
+                case 4:
+                    modifierX = 1;
+                    modifierY = 1;
+                    break;
+                case 5:
+                    modifierX = 1;
+                    modifierY = -1;
+                    break;
+                case 6:
+                    modifierX = -1;
+                    modifierY = 1;
+                    break;
+                case 7:
+                    modifierX = -1;
+                    modifierY = -1;
+                    break;
+            }
             testPos = toCoord(new Point(this.position.x + initPositions[direction][0], this.position.y + initPositions[direction][1]));
             for (int distance = 0; testPos != null && distance < 7; distance++) {
                 testTile = boardInstance.getTile(testPos);
                 if (!testTile.isOccupied()) {
                     this.legalMoves.add((Point)testPos.clone());
-                    switch (direction) {
-                        case 0:
-                            modifierY = -1;
-                            break;
-                        case 1:
-                            modifierY = 1;
-                            break;
-                        case 2:
-                            modifierX = 1;
-                            break;
-                        case 3:
-                            modifierX = -1;
-                            break;
-                        case 4:
-                            modifierX = 1;
-                            modifierY = 1;
-                            break;
-                        case 5:
-                            modifierX = 1;
-                            modifierY = -1;
-                            break;
-                        case 6:
-                            modifierX = -1;
-                            modifierY = 1;
-                            break;
-                        case 7:
-                            modifierX = -1;
-                            modifierY = -1;
-                            break;
-                    }
+
                     testPos = toCoord(new Point(testPos.x + modifierX, testPos.y + modifierY));
                 } else {
                     //si la pièce occupante est de couleur inverse, ajout de la position en legalMoves

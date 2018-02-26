@@ -43,7 +43,7 @@ public class Tile {
         Tile testTile;
 
         int posY = this.position.y + ( isWhite ? 1 : -1);
-        testPos = new Point(this.piece.getPosition().x+1, posY);
+        testPos = new Point(position.x+1, posY);
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
@@ -52,7 +52,7 @@ public class Tile {
                 return true;
             }
         }
-        testPos.setLocation(this.piece.getPosition().x-1, posY);
+        testPos.setLocation(position.x-1, posY);
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
@@ -234,11 +234,11 @@ public class Tile {
      * Repose une pièce capturée pour la remise en arrière
      * @param pieceType Type de la pièce capturée
      */
-    public void uncapture(Board board, char pieceType) throws UnsupportedOperationException
+    public void uncapture(Board board, char pieceType, boolean isWhite) throws UnsupportedOperationException
     {
         if(isOccupied())
             throw new UnsupportedOperationException("Case occupée");
-        ArrayList<Piece> arr = board.searchPieces(pieceType, this.position);
+        ArrayList<Piece> arr = board.searchPieces(pieceType, this.position, isWhite);
         for(Piece piece : arr)
         {
             if(!piece.getOnBoard())
