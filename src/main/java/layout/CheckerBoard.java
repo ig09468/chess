@@ -54,7 +54,7 @@ public class CheckerBoard extends GridPane {
                 rect.setStroke(Color.TRANSPARENT);
                 rect.setStrokeType(StrokeType.INSIDE);
                 rect.setStrokeWidth(0);
-                rect.setFill(whiteTile ? Color.BEIGE : Color.DARKSLATEGRAY);
+                rect.setFill(whiteTile ? Color.BEIGE : Color.rgb(228,147,65));
                 tile.getChildren().add(rect);
                 tile.setOnMouseClicked((e)-> tile.clickHandle());
                 whiteTile = !whiteTile;

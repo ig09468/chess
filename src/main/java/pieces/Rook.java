@@ -34,12 +34,12 @@ public class Rook extends Piece {
         Point testPos;
         Tile testTile;
         int initPositions[][] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0} };
-        int modifierX=0, modifierY=0;
 
         for (int direction = 0; direction < 4; direction++) {
             testPos = toCoord(new Point(this.position.x + initPositions[direction][0], this.position.y + initPositions[direction][1]));
             for (int distance = 0; testPos != null && distance<7; distance++) {
                 testTile = boardInstance.getTile(testPos);
+                int modifierX=0, modifierY=0;
                 if (!testTile.isOccupied()) {
                     this.legalMoves.add((Point)testPos.clone());
                     switch(direction) {
