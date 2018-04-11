@@ -35,14 +35,19 @@ public class Parametres extends GridPane {
         TextField minDelayField = new TextField("2");
         Button newGameButton = new Button("Nouvelle Partie");
 
+        Button undo = new Button("Undo");
+
+
         addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultyComboBox, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label());
+        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
         minDelayField.setMaxWidth(30);
 
         newGameButton.setOnAction((e)-> Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(),whiteAICheckbox.isSelected(),blackAICheckBox.isSelected(), minDelayField.getText()));
+        undo.setOnAction((e)->{Controller.currentGame.getBoard().undo();
+        Controller.checkerboard.updateBoard(Controller.currentGame.getBoard());});
     }
 
     public static int stringToDifficultyLevel(String diffString)

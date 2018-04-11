@@ -34,7 +34,7 @@ public class CheckerBoard extends GridPane {
         boolean whiteTile=true;
         for(int i=1; i<9;i++)
         {
-            Label leftLetter = new Label((char)((int)'A' +i-1) + " ");
+            Label leftLetter = new Label(String.valueOf(9-i));
             leftLetter.setMinHeight(60);
             add(leftLetter, 0, i);
 
@@ -43,7 +43,7 @@ public class CheckerBoard extends GridPane {
         board.setStyle("-fx-border-color: black; -fx-border-width: 1px;-fx-border-style: solid inside");
         for(int column=0; column<8; column++)
         {
-            Label topLabel = new Label(String.valueOf(column+1));
+            Label topLabel = new Label((char)((int)'A' +column) + " ");
             topLabel.setMinWidth(60);
             add(topLabel, column+1, 0);
             topLabel.setAlignment(Pos.CENTER);
@@ -61,7 +61,7 @@ public class CheckerBoard extends GridPane {
                 board.add(tile, column, row);
             }
             whiteTile = !whiteTile;
-            Label bottomLabel = new Label(String.valueOf(column+1));
+            Label bottomLabel = new Label(" " + (char)((int)'A' +column));
             bottomLabel.setMinWidth(60);
             add(bottomLabel, column+1, 9);
             bottomLabel.setAlignment(Pos.CENTER);
@@ -69,7 +69,7 @@ public class CheckerBoard extends GridPane {
         add(board, 1, 1, 8,8);
         for(int i=1; i<9;i++)
         {
-            Label rightLetter = new Label(" " + (char)((int)'A' +i-1));
+            Label rightLetter = new Label(String.valueOf(9-i));
             rightLetter.setMinHeight(60);
             add(rightLetter, 9, i);
         }

@@ -1,5 +1,6 @@
 package layout;
 
+import ia.AIMovement;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -84,5 +85,21 @@ public class Controller {
     public static Rectangle2D getViewRectangle(char pieceShortName, boolean isWhite)
     {
         return new Rectangle2D(piecesImageOrder.indexOf(pieceShortName) * pieceWidth, (isWhite ? WHITE_OFFSET : BLACK_OFFSET) * pieceHeight, pieceWidth, pieceHeight);
+    }
+
+    public static void doNextMove()
+    {
+        if(currentGame.getBoard().isWhiteTurn() && currentGame.getWhiteAILevel() != -1)
+        {
+            AIMovement move = currentGame.getWhiteAI().getNextMove();
+            currentGame.getBoard().resetCalculatedLegalMoves();
+            if(move != null)
+                currentGame.getBoard().move(move.getFrom(), move.getTo());
+        }else if(!currentGame.getBoard().isWhiteTurn() && currentGame.getBlackAILevel() != -1)
+        {
+            AIMovement move = currentGame.getBlackAI().getNextMove();
+            if(move!=null)
+                currentGame.getBoard().move(move.getFrom(), move.getTo());
+        }
     }
 }

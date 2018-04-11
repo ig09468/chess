@@ -56,6 +56,7 @@ public class TilePane extends StackPane {
                 {
                     Controller.checkerboard.resetHighlight();
                     board.move(pieceSelected.getPosition(), coord);
+                    Controller.doNextMove();
                 }
             }
         }

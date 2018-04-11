@@ -75,4 +75,9 @@ public class ChessUtils {
                 return false;
         return true;
     }
+
+    public static String toStringPos(Point pos)
+    {
+        return (char)('A'+pos.x) + "" +(pos.y+1);
+    }
 }
