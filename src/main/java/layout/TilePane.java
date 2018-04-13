@@ -30,29 +30,23 @@ public class TilePane extends StackPane {
 
     public void clickHandle()
     {
-        if(board != null)
-        {
+        if (!Controller.boardLock && board != null && !(((Controller.currentGame.getWhiteAILevel() != -1) && board.isWhiteTurn()) || ((Controller.currentGame.getBlackAILevel() != -1) && !board.isWhiteTurn()))) {
             Piece piece = board.getPiece(coord);
-
             //On a cliqué sur une piece qui doit jouer, on affiche les mouvements légaux
-            if(piece != null && piece.isWhite() == board.isWhiteTurn())
-            {
-                if(!piece.isLegalMovesCalculated())
+            if (piece != null && piece.isWhite() == board.isWhiteTurn()) {
+                if (!piece.isLegalMovesCalculated())
                     piece.calculateLegalMoves(board);
-                if(piece.canMove())
-                {
+                if (piece.canMove()) {
                     Controller.checkerboard.setHighlight(coord, piece.getLegalMoves());
-                }else
-                {
+                } else {
                     Controller.checkerboard.setCannotMove(coord);
                 }
                 board.setSelectedPiece(piece);
-            }else //On a cliqué sur une case vide ou une piece adverse, on vérifie si on peut effectuer un mouvement
+            } else //On a cliqué sur une case vide ou une piece adverse, on vérifie si on peut effectuer un mouvement
             {
 
                 Piece pieceSelected = board.getSelectedPiece();
-                if(pieceSelected != null && pieceSelected.isLegalMove(coord))
-                {
+                if (pieceSelected != null && pieceSelected.isLegalMove(coord)) {
                     Controller.checkerboard.resetHighlight();
                     board.move(pieceSelected.getPosition(), coord);
                     Controller.doNextMove();

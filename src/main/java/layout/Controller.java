@@ -2,7 +2,9 @@ package layout;
 
 import ia.AIMovement;
 import ia.ZobristHash;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import logique.Board;
@@ -15,6 +17,7 @@ public class Controller {
     public static Stage mainStage;
     public static Game currentGame;
     public static CheckerBoard checkerboard;
+    public static Label computingLabel;
 
     public static Image piecesImage = null;
     private static final String piecesImageOrder = "KQBNRP";
@@ -26,6 +29,10 @@ public class Controller {
     public static Thread autoplayThread;
     public static final ZobristHash zobrist = new ZobristHash();
 
+    public static Thread whiteThread = null;
+    public static Thread blackThread = null;
+    public static boolean boardLock = false;
+
 
 
     public static void newGame(String whiteAIComboText, String blackAIComboText, boolean whiteAIActivated, boolean blackAIActivated,String delayText)
@@ -34,6 +41,10 @@ public class Controller {
         {
             currentGame = new Game(whiteAIActivated ? Parametres.stringToDifficultyLevel(whiteAIComboText) : -1, blackAIActivated ? Parametres.stringToDifficultyLevel(blackAIComboText) : -1, Integer.valueOf(delayText));
             showGame();
+            if(currentGame.getWhiteAILevel() > -1)
+            {
+                doNextMove();
+            }
         }catch(NumberFormatException e)
         {
             e.printStackTrace();
@@ -93,26 +104,52 @@ public class Controller {
 
     public static void doNextMove()
     {
-        if(currentGame.getBoard().isWhiteTurn() && currentGame.getWhiteAILevel() != -1)
+        Board board = currentGame.getBoard();
+        if(board.isWhiteTurn())
         {
-            AIMovement move = currentGame.getWhiteAI().getNextMove();
-            currentGame.getBoard().resetCalculatedLegalMoves();
-            if(move != null) {
-                try {
-                    currentGame.getBoard().move(move.getFrom(), move.getTo());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if(currentGame.getWhiteAILevel() > -1)
+            {
+                boardLock = true;
+                long start = System.currentTimeMillis();
+                Controller.computingLabel.setText("White AI computing next move...");
+                whiteThread = new Thread(()->
+                {
+                   AIMovement move = Controller.currentGame.getWhiteAI().getNextMove();
+                   if(move != null)
+                   {
+                       Platform.runLater(()->{
+                           currentGame.getBoard().move(move.getFrom(), move.getTo());
+                           long end = System.currentTimeMillis();
+                           Controller.computingLabel.setText("White move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
+                           boardLock=false;
+                           doNextMove();
+                       });
+                   }
+                });
+                whiteThread.start();
             }
-        }else if(!currentGame.getBoard().isWhiteTurn() && currentGame.getBlackAILevel() != -1)
+        }else
         {
-            AIMovement move = currentGame.getBlackAI().getNextMove();
-            if(move!=null) {
-                try {
-                    currentGame.getBoard().move(move.getFrom(), move.getTo());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if(currentGame.getBlackAILevel() > -1)
+            {
+                boardLock = true;
+                long start = System.currentTimeMillis();
+                Controller.computingLabel.setText("Black AI computing next move...");
+                blackThread = new Thread(()->
+                {
+                    AIMovement move = Controller.currentGame.getBlackAI().getNextMove();
+                    if(move != null)
+                    {
+                        Platform.runLater(()->{
+                            currentGame.getBoard().move(move.getFrom(), move.getTo());
+                            long end = System.currentTimeMillis();
+                            Controller.computingLabel.setText("Black move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
+                            boardLock=false;
+                            doNextMove();
+                        });
+                    }
+                });
+                blackThread.start();
             }
         }
     }
