@@ -113,6 +113,66 @@ public class Board {
         }
     }
 
+    public Board(Board board)
+    {
+        tileList = new Tile[8][8];
+        pieceList= new ArrayList<>();
+        moveHistory=new ArrayList<>();
+        boardState=null;
+        whiteKing=null;
+        blackKing=null;
+        candidatPriseEnPassant=board.candidatPriseEnPassant != null ? (Point)board.candidatPriseEnPassant.clone() : null;
+        needPromotion=null;
+        isWhiteTurn=board.isWhiteTurn;
+
+        Piece piece;
+        for(int x=0; x<8;x++)
+        {
+            for(int y=0; y<8;y++)
+            {
+                piece =null;
+                Piece temp = board.getPiece(new Point(x,y));
+                if(temp != null)
+                {
+                    if(temp instanceof Pawn)
+                    {
+                        piece = new Pawn(temp.isWhite(), new Point(x,y));
+                    }else if(temp instanceof Rook)
+                    {
+                        piece = new Rook(temp.isWhite(), new Point(x,y));
+                        piece.setHasNeverMoved(temp.getHasNeverMoved());
+                    }else if(temp instanceof Bishop)
+                    {
+                        piece = new Bishop(temp.isWhite(), new Point(x,y));
+                    }else if(temp instanceof Queen)
+                    {
+                        piece = new Queen(temp.isWhite(), new Point(x,y));
+                    }else if(temp instanceof Knight)
+                    {
+                        piece = new Knight(temp.isWhite(), new Point(x,y));
+                    }else if(temp instanceof King)
+                    {
+                        piece = new King(temp.isWhite(), new Point(x,y));
+                        piece.setHasNeverMoved(temp.getHasNeverMoved());
+                        if(temp.isWhite())
+                        {
+                            whiteKing = (King)piece;
+                        }else
+                        {
+                            blackKing = (King)piece;
+                        }
+                    }
+                }
+
+                tileList[x][y] = new Tile(new Point(x,y),piece);
+                if(piece != null)
+                {
+                    pieceList.add(piece);
+                }
+            }
+        }
+    }
+
     public boolean compareToEnPassantCandidat(Pawn piece)
     {
         return piece.getPosition().equals(candidatPriseEnPassant);
@@ -139,16 +199,15 @@ public class Board {
         return isWhiteTurn;
     }
 
-    public void move(Point oldPos, Point newPos)
-    {
-        move(oldPos, newPos, true, false);
+    public boolean move(Point oldPos, Point newPos){
+        return move(oldPos, newPos, true, false);
     }
 
-    //Bouge une piece de son ancienne coordonée vers une nouvelle
-    public void move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer)
-    {
+    //Bouge une piece de son ancienne coordonnée vers une nouvelle
+    public boolean move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer){
         Tile oldTile = getTile(oldPos);
         Tile newTile = getTile(newPos);
+        boolean castlerec = false;
 
         if(oldTile != null && newTile != null && oldTile.isOccupied())
         {
@@ -175,11 +234,14 @@ public class Board {
                         if(((King) piece).getBigCastle() && (oldPos.x-newPos.x) == 2)
                         {
                             this.moveWithoutCheck(new Point(0,piece.getPosition().y), new Point(3, piece.getPosition().y));
-                            this.moveHistory.add(MoveRecord.BIGCASTLE(candidatPriseEnPassant));
+                            this.moveHistory.add(MoveRecord.BIGCASTLE(oldPos, newPos, candidatPriseEnPassant));
+                            castlerec = true;
+
                         }else if(((King) piece).getLittleCastle() && (oldPos.x-newPos.x) == -2)
                         {
                             this.moveWithoutCheck(new Point(7,piece.getPosition().y), new Point(5, piece.getPosition().y));
-                            this.moveHistory.add(MoveRecord.SMALLCASTLE(candidatPriseEnPassant));
+                            this.moveHistory.add(MoveRecord.SMALLCASTLE(oldPos, newPos, candidatPriseEnPassant));
+                            castlerec = true;
                         }
                     }else if(promotionCheck && piece instanceof Pawn && newPos.y == (piece.isWhite() ? 7 : 0))
                     {
@@ -187,36 +249,31 @@ public class Board {
                         promoted = Controller.currentGame.askPromotion();
                     }
                 }
-                if(!enPassantrec)
+                if(!enPassantrec && !castlerec)
                     this.moveHistory.add(new MoveRecord(oldPos, newPos, candidatPriseEnPassant,capt, promoted, neverMovedBefore));
                 candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Point)piece.getPosition().clone() : null;
                 afterMove(isBuffer);
-
+                return true;
+            }else
+            {
+                return false;
             }
         }else
         {
-            System.err.println("Wrong move : "+oldPos + "->" + newPos);
-            for(MoveRecord move : moveHistory)
-            {
-                System.err.println(move.getOldPos()+"->"+move.getNewPos()+":"+move.getCapture()+" ; ");
-            }
-            System.err.println();
+            return false;
         }
     }
 
-    public void move(Point oldPos, String newPos)
-    {
-        move(oldPos, ChessUtils.toCoord(newPos));
+    public boolean move(Point oldPos, String newPos){
+        return move(oldPos, ChessUtils.toCoord(newPos));
     }
 
-    public void move(String oldPos, Point newPos)
-    {
-        move(ChessUtils.toCoord(oldPos), newPos);
+    public boolean move(String oldPos, Point newPos){
+        return move(ChessUtils.toCoord(oldPos), newPos);
     }
 
-    public void move(String oldPos, String newPos)
-    {
-        move(ChessUtils.toCoord(oldPos), ChessUtils.toCoord(newPos));
+    public boolean move(String oldPos, String newPos){
+        return move(ChessUtils.toCoord(oldPos), ChessUtils.toCoord(newPos));
     }
 
     public void moveWithoutCheck(Point oldPos, Point newPos)
@@ -264,12 +321,14 @@ public class Board {
                 {
                     int posx = rec.getNewPos().x;
                     Point capturePos = new Point(posx, rec.getOldPos().y);
-                    newTile.getPiece().moveTo(oldTile, false, this);
                     Tile captureTile = getTile(capturePos);
                     if(captureTile != null)
                     {
                         captureTile.uncapture(this, 'P', !isWhiteTurn);
                     }
+                    newTile.getPiece().moveTo(oldTile, false, this);
+
+
                 }else
                 {
                     Piece piece = newTile.getPiece();
@@ -282,7 +341,9 @@ public class Board {
                         {
                             pieceList.set(pieceListIndex, piece);
                             piece.moveTo(oldTile, false, this);
-
+                        }else
+                        {
+                            System.err.println("Piece doesn't exist");
                         }
                     }else
                     {
@@ -295,8 +356,11 @@ public class Board {
                     }
                 }
                 candidatPriseEnPassant = rec.getEnPassantCandidate();
+            }else
+            {
+                System.err.println("Undo invalide");
             }
-            //System.out.println("Undone : " + mr.getOldPos() +"->"+ mr.getNewPos()+ " : " +mr.getCapture());
+            //System.out.println("Undone : " + rec.getOldPos() +"->"+ rec.getNewPos()+ " : " +rec.getCapture());
             this.boardState = null;
         }else
         {
@@ -588,10 +652,11 @@ public class Board {
     }
 
     public ArrayList<AIMovement> getAvailableMoves() {
+        resetCalculatedLegalMoves();
         ArrayList<AIMovement> moves = new ArrayList<>();
         long killerMoveValue;
         for (Piece piece : pieceList) {
-            if(piece.isOnBoard() && piece.isWhite() == isWhiteTurn)
+            if(piece.isOnBoard() && (piece.isWhite() == isWhiteTurn))
             {
                 Point pos = piece.getPosition();
                 piece.calculateLegalMoves(this);
@@ -665,9 +730,30 @@ public class Board {
             for(int y=0; y<8;y++)
             {
                 Piece piece = getPiece(new Point(x,y));
-                System.err.print(piece == null ? "  ," : piece.toShortName()+(piece.isWhite() ? "W" : "B")+",");
+                System.out.print(piece == null ? "  ," : piece.toShortName()+(piece.isWhite() ? "W" : "B")+",");
             }
-            System.err.println();
+            System.out.println();
         }
+    }
+
+    public void fullUndo()
+    {
+        resetCalculatedLegalMoves();
+        undo();
+    }
+
+    public Board clone()
+    {
+        return new Board(this);
+    }
+
+    public String moveHistoryToString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for(MoveRecord move : moveHistory)
+        {
+            sb.append(move).append(" ");
+        }
+        return sb.toString();
     }
 }

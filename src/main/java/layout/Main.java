@@ -18,7 +18,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         /*try {
             System.setOut(new PrintStream(new FileOutputStream("out.txt")));
-            System.setErr(new PrintStream(new FileOutputStream("err.txt")));
+            //System.setErr(new PrintStream(new FileOutputStream("err.txt")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }*/

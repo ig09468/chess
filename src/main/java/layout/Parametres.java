@@ -1,5 +1,6 @@
 package layout;
 
+import ia.AI;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -36,18 +37,49 @@ public class Parametres extends GridPane {
         Button newGameButton = new Button("Nouvelle Partie");
 
         Button undo = new Button("Undo");
-
+        Button autoplay = new Button("Auto");
 
         addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultyComboBox, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo);
+        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo, autoplay);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
         minDelayField.setMaxWidth(30);
 
         newGameButton.setOnAction((e)-> Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(),whiteAICheckbox.isSelected(),blackAICheckBox.isSelected(), minDelayField.getText()));
-        undo.setOnAction((e)->{Controller.currentGame.getBoard().undo();
+        undo.setOnAction((e)->{
+            Controller.currentGame.getBoard().fullUndo();
         Controller.checkerboard.updateBoard(Controller.currentGame.getBoard());});
+        autoplay.setOnAction((e)->{
+            if(Controller.autoplayActive)
+            {
+                if(Controller.autoplayThread != null)
+                {
+                    Controller.autoplayThread.interrupt();
+                    Controller.autoplayThread = null;
+                }
+                Controller.autoplayActive = false;
+            }else
+            {
+                if(Controller.currentGame != null && Controller.currentGame.getBoard() != null)
+                {
+                    Controller.autoplayThread = new Thread(()->{
+                        try {
+                            if (Controller.currentGame.getBoard().isWhiteTurn())
+                                Controller.currentGame.getWhiteAI().autoplay();
+                            else
+                                Controller.currentGame.getBlackAI().autoplay();
+                        }catch (Exception exc)
+                        {
+                            System.err.println(exc.getMessage());
+                        }
+                    });
+                    Controller.autoplayActive=true;
+                    Controller.autoplayThread.start();
+                }
+
+            }
+        });
     }
 
     public static int stringToDifficultyLevel(String diffString)

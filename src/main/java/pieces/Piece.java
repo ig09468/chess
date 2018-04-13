@@ -2,6 +2,7 @@ package pieces;
 
 import logique.Board;
 import logique.Tile;
+import utils.ChessUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -86,6 +87,8 @@ public abstract class Piece {
         return hasNeverMoved;
     }
 
+    public void setHasNeverMoved(boolean hasNeverMoved) { this.hasNeverMoved = hasNeverMoved;}
+
     /**
      * isDiffColor - Compare la couleur entre 2 pièces
      * @param isWhite La couleur de l'autre piece
@@ -124,7 +127,11 @@ public abstract class Piece {
             King king = boardInstance.getKing(this.white);
             for(int i=0; i<this.legalMoves.size();)
             {
-                boardInstance.move(this.position, this.legalMoves.get(i), false, true);
+                try {
+                    boardInstance.move(this.position, this.legalMoves.get(i), false, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 if(king.isAttacked(boardInstance))
                 {
                     this.legalMoves.remove(i);
@@ -135,10 +142,6 @@ public abstract class Piece {
                 boardInstance.undo();
             }
         }
-    }
-
-    public String toString() {
-        return white + " " + position.toString();
     }
 
     public boolean isAttacked(Board boardInstance) {
@@ -202,5 +205,10 @@ public abstract class Piece {
     public void resetLegalMoves() {
         this.legalMovesCalculated=false;
         this.legalMoves.clear();
+    }
+
+    public String toString()
+    {
+        return ChessUtils.toStringPos(position) + " " + toShortName() + (isWhite() ? "W" : "B") + (onBoard ? " On Board" : "");
     }
 }

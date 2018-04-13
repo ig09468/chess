@@ -110,13 +110,13 @@ public class King extends Piece {
         return null;
     }
 
-    public boolean wouldBeInCheck(Board boardInstance, Point oldPos, Point newPos) throws IllegalArgumentException
+    public boolean wouldBeInCheck(Board boardInstance, Point oldPos, Point newPos) throws Exception
     {
         oldPos = ChessUtils.toCoord(oldPos);
         newPos = ChessUtils.toCoord(newPos);
         if(boardInstance == null || oldPos == null || newPos == null)
             throw new IllegalArgumentException();
-        boardInstance.move(oldPos, newPos);
+        boardInstance.move(oldPos, newPos, false, true);
         boolean check = this.isAttacked(boardInstance);
         boardInstance.undo();
         return check;

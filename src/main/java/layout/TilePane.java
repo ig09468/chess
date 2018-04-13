@@ -37,7 +37,6 @@ public class TilePane extends StackPane {
             //On a cliqué sur une piece qui doit jouer, on affiche les mouvements légaux
             if(piece != null && piece.isWhite() == board.isWhiteTurn())
             {
-
                 if(!piece.isLegalMovesCalculated())
                     piece.calculateLegalMoves(board);
                 if(piece.canMove())

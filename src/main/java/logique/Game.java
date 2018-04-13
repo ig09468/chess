@@ -16,8 +16,8 @@ public class Game {
         this.whiteAILevel = whiteAILevel;
         this.blackAILevel = blackAILevel;
         this.delay = delay;
-        whiteAI = whiteAILevel!=-1 ? new AI(true, whiteAILevel, board) : null;
-        blackAI = blackAILevel!=-1 ? new AI(false, blackAILevel, board) : null;
+        whiteAI =  new AI(true, whiteAILevel, board);
+        blackAI =  new AI(false, blackAILevel, board);
     }
 
     public char askPromotion()

@@ -18,13 +18,13 @@ public class MoveRecord {
     private boolean hasNeverMoved;
     private Point enPassantCandidate;
 
-    public static MoveRecord BIGCASTLE(Point enPassantCandidate)
+    public static MoveRecord BIGCASTLE(Point oldPos, Point newPos,Point enPassantCandidate)
     {
-        return new MoveRecord(null, null, enPassantCandidate,' ', ' ', true, false, false, true);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate,' ', ' ', true, false, false, true);
     }
-    public static MoveRecord SMALLCASTLE(Point enPassantCandidate)
+    public static MoveRecord SMALLCASTLE(Point oldPos, Point newPos,Point enPassantCandidate)
     {
-        return new MoveRecord(null, null, enPassantCandidate, ' ', ' ', false, true, false, true);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, true, false, true);
     }
 
     private MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
@@ -101,14 +101,14 @@ public class MoveRecord {
             return "0-0";
         try
         {
-            StringBuilder sb = new StringBuilder(ChessUtils.pointToString(oldPos));
+            StringBuilder sb = new StringBuilder(ChessUtils.toStringPos(oldPos));
             if(capture != ' ')
             {
                 sb.append("x");
                 if(!priseEnPassant)
                     sb.append(capture);
             }
-            sb.append(newPos);
+            sb.append(ChessUtils.toStringPos(newPos));
             if(promotion != ' ')
                 sb.append(promotion);
             if(priseEnPassant)

@@ -245,6 +245,7 @@ public class Tile {
             {
                 this.piece = piece;
                 this.piece.setOnBoard(true);
+                break;
             }
         }
     }

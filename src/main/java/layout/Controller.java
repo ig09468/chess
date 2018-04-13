@@ -1,6 +1,7 @@
 package layout;
 
 import ia.AIMovement;
+import ia.ZobristHash;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -21,6 +22,9 @@ public class Controller {
     private static final int BLACK_OFFSET=1;
     private static int pieceWidth=0;
     private static int pieceHeight=0;
+    public static boolean autoplayActive=false;
+    public static Thread autoplayThread;
+    public static final ZobristHash zobrist = new ZobristHash();
 
 
 
@@ -93,13 +97,23 @@ public class Controller {
         {
             AIMovement move = currentGame.getWhiteAI().getNextMove();
             currentGame.getBoard().resetCalculatedLegalMoves();
-            if(move != null)
-                currentGame.getBoard().move(move.getFrom(), move.getTo());
+            if(move != null) {
+                try {
+                    currentGame.getBoard().move(move.getFrom(), move.getTo());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }else if(!currentGame.getBoard().isWhiteTurn() && currentGame.getBlackAILevel() != -1)
         {
             AIMovement move = currentGame.getBlackAI().getNextMove();
-            if(move!=null)
-                currentGame.getBoard().move(move.getFrom(), move.getTo());
+            if(move!=null) {
+                try {
+                    currentGame.getBoard().move(move.getFrom(), move.getTo());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

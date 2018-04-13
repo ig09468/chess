@@ -41,7 +41,7 @@ public class Pawn extends Piece {
         legalMoves.clear();
 
 
-        int posY = (this.white ? 1 : -1);
+        int posY = (isWhite() ? 1 : -1);
         /* Affectation du point de test, déplacement en diagonale */
         Point testPos = new Point(this.position.x, this.position.y + posY);
 
@@ -57,13 +57,13 @@ public class Pawn extends Piece {
             testTile=boardInstance.getTile(testPos);
 
             /* Test si la deuxième case est disponible */
-            if(this.hasNeverMoved && testTile!=null && !testTile.isOccupied()){
+            if(this.position.y == (this.white ? 1 : 6) && testTile!=null && !testTile.isOccupied()){
                 this.legalMoves.add((Point)testPos.clone());
             }
         }
 
         /* Affectation de la nouvelle position */
-        testPos.setLocation(this.position.x+1, this.position.y + ((this.white) ? 1 : -1) );
+        testPos = new Point(this.position.x+1, this.position.y + posY);
         testTile=boardInstance.getTile((Point)testPos.clone());
 
         /* Vérification si testTile existe bien */
@@ -72,7 +72,7 @@ public class Pawn extends Piece {
 
                 /* Vérifie que la pièce en diagonale est bien d'une couleur différente,
                    si c'est bon, on l'ajoute à la liste */
-                if(testTile.getPiece().isDiffColor(isWhite())){
+                if(isWhite() != testTile.getPiece().isWhite()){
                     this.legalMoves.add((Point)testPos.clone());
                 }
             }else
@@ -85,7 +85,7 @@ public class Pawn extends Piece {
             }
         }
         /* Affectation de la nouvelle position */
-        testPos.setLocation(this.position.x-1, this.position.y + ((this.white) ? 1 : -1) );
+        testPos.setLocation(this.position.x-1, this.position.y + posY );
         testTile=boardInstance.getTile((Point)testPos.clone());
 
         /* Vérification si testTile existe bien */
@@ -141,6 +141,13 @@ public class Pawn extends Piece {
                 return p;
         }
         return null;
+    }
+
+    @Override
+    public void resetLegalMoves()
+    {
+        super.resetLegalMoves();
+        this.enPassantCapturePos.clear();
     }
 
 }

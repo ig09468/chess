@@ -86,7 +86,7 @@ public class ZobristHash {
                 {
                     shortName='U';
                 }
-                return getZobristValueFor(tile.getPosition(), shortName, tile.getPiece().isWhite());
+                return getZobristValueFor(tile.getPosition(), shortName, tile.getPiece().isWhite()) + (tile.getPiece().getHasNeverMoved() ? 1:0);
             }else
             {
                 return zobristTable[8*tile.getPosition().x + 13*tile.getPosition().y];

@@ -1,5 +1,7 @@
 package ia;
 
+import utils.ChessUtils;
+
 import java.awt.*;
 
 public class AIMovement {
@@ -12,6 +14,7 @@ public class AIMovement {
         this.from = from;
         this.to = to;
         this.promotion = promotion;
+        this.killerMoveValue = killerMoveValue;
     }
 
     public AIMovement(Point from, Point to, long killerMoveValue)
@@ -33,5 +36,16 @@ public class AIMovement {
 
     public long getKillerMoveValue() {
         return killerMoveValue;
+    }
+
+    @Override
+    public AIMovement clone()
+    {
+        return new AIMovement(from, to, promotion, killerMoveValue);
+    }
+
+    public String toString()
+    {
+        return ChessUtils.toStringPos(from)+ ChessUtils.toStringPos(to)+promotion;
     }
 }
