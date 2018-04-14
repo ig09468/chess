@@ -34,7 +34,36 @@ public class Main extends Application {
             e.printStackTrace();
             System.err.println("Cannot load icon : "+e.getMessage());
         }
-
+        primaryStage.setOnCloseRequest((e)->{
+            if(Controller.whiteThread != null)
+            {
+                if(Controller.whiteThread.isAlive())
+                {
+                    try {
+                        Controller.whiteThread.terminate();
+                        Controller.whiteThread.join();
+                    } catch (InterruptedException e1) {
+                        e1.getMessage();
+                        Controller.boardLock=false;
+                    }
+                }
+                Controller.whiteThread=null;
+            }
+            if(Controller.blackThread != null)
+            {
+                if(Controller.blackThread.isAlive())
+                {
+                    try{
+                        Controller.blackThread.terminate();
+                        Controller.blackThread.join();
+                    } catch (InterruptedException e1) {
+                        e1.getMessage();
+                        Controller.boardLock=false;
+                    }
+                }
+                Controller.blackThread=null;
+            }
+        });
         primaryStage.show();
     }
 

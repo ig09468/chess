@@ -1,9 +1,11 @@
 package layout;
 
 import ia.AIMovement;
+import ia.AIThread;
 import ia.ZobristHash;
 import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -23,14 +25,15 @@ public class Controller {
     private static final String piecesImageOrder = "KQBNRP";
     private static final int WHITE_OFFSET=0;
     private static final int BLACK_OFFSET=1;
+    public static Button undobutton;
     private static int pieceWidth=0;
     private static int pieceHeight=0;
     public static boolean autoplayActive=false;
     public static Thread autoplayThread;
     public static final ZobristHash zobrist = new ZobristHash();
 
-    public static Thread whiteThread = null;
-    public static Thread blackThread = null;
+    public static AIThread whiteThread = null;
+    public static AIThread blackThread = null;
     public static boolean boardLock = false;
 
 
@@ -109,23 +112,10 @@ public class Controller {
         {
             if(currentGame.getWhiteAILevel() > -1)
             {
+                undobutton.setDisable(true);
                 boardLock = true;
-                long start = System.currentTimeMillis();
                 Controller.computingLabel.setText("White AI computing next move...");
-                whiteThread = new Thread(()->
-                {
-                   AIMovement move = Controller.currentGame.getWhiteAI().getNextMove();
-                   if(move != null)
-                   {
-                       Platform.runLater(()->{
-                           currentGame.getBoard().move(move.getFrom(), move.getTo());
-                           long end = System.currentTimeMillis();
-                           Controller.computingLabel.setText("White move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
-                           boardLock=false;
-                           doNextMove();
-                       });
-                   }
-                });
+                whiteThread = new AIThread(true);
                 whiteThread.start();
             }
         }else
@@ -133,22 +123,9 @@ public class Controller {
             if(currentGame.getBlackAILevel() > -1)
             {
                 boardLock = true;
-                long start = System.currentTimeMillis();
+                undobutton.setDisable(true);
                 Controller.computingLabel.setText("Black AI computing next move...");
-                blackThread = new Thread(()->
-                {
-                    AIMovement move = Controller.currentGame.getBlackAI().getNextMove();
-                    if(move != null)
-                    {
-                        Platform.runLater(()->{
-                            currentGame.getBoard().move(move.getFrom(), move.getTo());
-                            long end = System.currentTimeMillis();
-                            Controller.computingLabel.setText("Black move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
-                            boardLock=false;
-                            doNextMove();
-                        });
-                    }
-                });
+                blackThread = new AIThread(false);
                 blackThread.start();
             }
         }

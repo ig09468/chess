@@ -56,8 +56,7 @@ public class Tile {
         testTile = boardInstance.getTile(testPos);
         if(testTile!=null && testTile.isOccupied())
         {
-            if(testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof Pawn)
-                return true;
+            return testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof Pawn;
         }
         return false;
     }
@@ -71,11 +70,10 @@ public class Tile {
         Point testPos;
         Tile testTile;
         int initPositions [][]= {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-        for(int i=0; i < initPositions.length; i++)
-        {
-            testPos = new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]);
+        for (int[] initPosition : initPositions) {
+            testPos = new Point(this.position.x + initPosition[0], this.position.y + initPosition[1]);
             testTile = boardInstance.getTile(testPos);
-            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof King) {
+            if (testTile != null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof King) {
                 return true;
             }
 
@@ -94,10 +92,12 @@ public class Tile {
         int initPositions[][] = {{1,0}, {0,1}, {-1,0}, {0,-1}};
         Point testPos;
         Tile testTile;
-        int modifierX=0, modifierY=0;
+        int modifierX, modifierY;
 
         for(int direction=0; direction < initPositions.length; direction++)
         {
+            modifierX = 0;
+            modifierY = 0;
             testPos = new Point(this.position.x + initPositions[direction][0],  this.position.y + initPositions[direction][1]);
             while(((testTile = boardInstance.getTile(testPos))!=null))
             {
@@ -133,9 +133,11 @@ public class Tile {
         int initPositions [][]= {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
         Point testPos;
         Tile testTile;
-        int modifierX=0, modifierY=0;
+        int modifierX, modifierY;
         for(int i=0; i < initPositions.length; i++)
         {
+            modifierX=0;
+            modifierY=0;
             testPos = toCoord(new Point(this.position.x + initPositions[i][0],  this.position.y + initPositions[i][1]));
             while((testTile = boardInstance.getTile(testPos))!=null)
             {
@@ -173,12 +175,10 @@ public class Tile {
         Tile testTile;
 
 
-        for(int i=0; i<initPositions.length; i++)
-        {
-            testPos = toCoord(new Point(this.position.x + initPositions[i][0], this.position.y + initPositions[i][1]));
+        for (int[] initPosition : initPositions) {
+            testPos = new Point(this.position.x + initPosition[0], this.position.y + initPosition[1]);
             testTile = boardInstance.getTile(testPos);
-            if(testTile!=null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece()instanceof Knight )
-            {
+            if (testTile != null && testTile.isOccupied() && testTile.getPiece().isDiffColor(isWhite) && testTile.getPiece() instanceof Knight) {
                 return true;
             }
         }

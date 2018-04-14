@@ -14,6 +14,7 @@ public class AI {
     private Board board;
     private AIMovement latestMovement;
     private static ZobristHash zobrist=null;
+    private boolean terminate;
     public AI(boolean isWhiteSide,int level, Board board)
     {
         this.whiteSide = isWhiteSide;
@@ -21,9 +22,10 @@ public class AI {
         this.board = board;
         if(zobrist == null)
             zobrist = new ZobristHash();
+        terminate = false;
     }
 
-    public void autoplay() throws Exception {
+    /*public void autoplay() throws Exception {
         if(zobrist == null)
             zobrist = new ZobristHash();
         while(board.calculateStatus())
@@ -43,7 +45,7 @@ public class AI {
             Platform.runLater(Controller::showGame);
             Thread.sleep(1000);
         }
-    }
+    }*/
 
     public char choosePromotion()
     {
@@ -53,7 +55,7 @@ public class AI {
         return board.promote(promotion);
     }
 
-    public AIMovement getNextMove()
+    public AIMovement getNextMove() throws InterruptedException
     {
         ArrayList<AIMovement> moves =  board.getAvailableMoves();
         if(level < 1)
@@ -66,33 +68,32 @@ public class AI {
         }else
         {
             AIMovement bestMove = null;
-            try {
-                long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
-                for (AIMovement move : moves) {
-                    latestMovement = move.clone();
-                    if(!board.move(move.getFrom(), move.getTo(), true, true))
-                        throw new Exception("Invalid move : " + move);
-
-                    board.resetCalculatedLegalMoves();
-                    long nextValue = minimax(depthArray[level > 3 ? 3 : level] - 1, !whiteSide);
-                    board.fullUndo();
-
-                    if ((whiteSide && nextValue >= bestValue) || (!whiteSide && nextValue <= bestValue)) {
-                        bestMove = move.clone();
-                        bestValue = nextValue;
-                    }
+            long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
+            for (AIMovement move : moves) {
+                if(terminate)
+                    throw new InterruptedException();
+                latestMovement = move.clone();
+                board.move(move.getFrom(), move.getTo(), true, true);
+                if(terminate)
+                    throw new InterruptedException();
+                board.resetCalculatedLegalMoves();
+                long nextValue = minimax(depthArray[level > 3 ? 3 : level] - 1, !whiteSide);
+                board.fullUndo();
+                if(terminate)
+                    throw new InterruptedException();
+                if ((whiteSide && nextValue >= bestValue) || (!whiteSide && nextValue <= bestValue)) {
+                    bestMove = move.clone();
+                    bestValue = nextValue;
                 }
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
-                Controller.showGame();
             }
             return bestMove;
         }
         return null;
     }
 
-    private long minimax(int depth, boolean isMax) throws Exception {
+    private long minimax(int depth, boolean isMax) throws InterruptedException {
+        if(terminate)
+            throw new InterruptedException();
         ArrayList<AIMovement> moves = board.getAvailableMoves();
         if(moves.isEmpty())
         {
@@ -104,20 +105,28 @@ public class AI {
         }
         long bestValue = isMax ? Long.MIN_VALUE : Long.MAX_VALUE;
         for (AIMovement move : moves) {
+            if(terminate)
+                throw new InterruptedException();
             AIMovement previousMovement = latestMovement.clone();
             latestMovement = move.clone();
 
-            if(!board.move(move.getFrom(), move.getTo(), true, true))
-                throw new Exception("Invalid move : " + move);
-
+            board.move(move.getFrom(), move.getTo(), true, true);
+            if(terminate)
+                throw new InterruptedException();
             long nextValue = minimax(depth - 1, !isMax);
 
             board.fullUndo();
+            if(terminate)
+                throw new InterruptedException();
             latestMovement = previousMovement.clone();
             if ((isMax && bestValue <= nextValue) || (!isMax && bestValue >= nextValue)) {
                 bestValue = nextValue;
             }
         }
         return bestValue;
+    }
+
+    public void terminate() {
+        terminate=true;
     }
 }

@@ -49,6 +49,7 @@ public class TilePane extends StackPane {
                 if (pieceSelected != null && pieceSelected.isLegalMove(coord)) {
                     Controller.checkerboard.resetHighlight();
                     board.move(pieceSelected.getPosition(), coord);
+                    Controller.undobutton.setDisable(false);
                     Controller.doNextMove();
                 }
             }

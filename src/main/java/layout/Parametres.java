@@ -37,20 +37,55 @@ public class Parametres extends GridPane {
         Button newGameButton = new Button("Nouvelle Partie");
 
         Button undo = new Button("Undo");
-        Button autoplay = new Button("Auto");
+        Controller.undobutton = undo;
+        /*Button autoplay = new Button("Auto");*/
 
         addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultyComboBox, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo, autoplay);
+        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo/*, autoplay*/);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
         minDelayField.setMaxWidth(30);
 
-        newGameButton.setOnAction((e)-> Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(),whiteAICheckbox.isSelected(),blackAICheckBox.isSelected(), minDelayField.getText()));
+        newGameButton.setOnAction((e)-> {
+            if(Controller.whiteThread != null)
+            {
+                if(Controller.whiteThread.isAlive())
+                {
+                    try {
+                        Controller.whiteThread.terminate();
+                        Controller.whiteThread.join();
+                    } catch (InterruptedException e1) {
+                        e1.getMessage();
+                    }
+                }
+                Controller.whiteThread=null;
+            }
+            if(Controller.blackThread != null)
+            {
+                if(Controller.blackThread.isAlive())
+                {
+                    try{
+                        Controller.blackThread.terminate();
+                        Controller.blackThread.join();
+                    } catch (InterruptedException e1) {
+                        e1.getMessage();
+                    }
+                }
+                Controller.blackThread=null;
+            }
+            Controller.computingLabel.setText("");
+            Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(), whiteAICheckbox.isSelected(), blackAICheckBox.isSelected(), minDelayField.getText());
+
+        });
         undo.setOnAction((e)->{
             Controller.currentGame.getBoard().fullUndo();
-        Controller.checkerboard.updateBoard(Controller.currentGame.getBoard());});
-        autoplay.setOnAction((e)->{
+            Controller.checkerboard.updateBoard(Controller.currentGame.getBoard());
+            if(Controller.currentGame.getBoard().getLastMove() == null)
+                undo.setDisable(true);
+        });
+        undo.setDisable(true);
+        /*autoplay.setOnAction((e)->{
             if(Controller.autoplayActive)
             {
                 if(Controller.autoplayThread != null)
@@ -79,7 +114,7 @@ public class Parametres extends GridPane {
                 }
 
             }
-        });
+        });*/
     }
 
     public static int stringToDifficultyLevel(String diffString)
