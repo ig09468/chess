@@ -1,7 +1,5 @@
 package ia;
 
-import javafx.application.Platform;
-import layout.Controller;
 import logique.Board;
 
 import java.util.ArrayList;
@@ -9,7 +7,6 @@ import java.util.Random;
 
 public class AI {
     private int level;
-    public static final int[] depthArray = {0,2,3,4};
     private boolean whiteSide;
     private Board board;
     private AIMovement latestMovement;
@@ -24,28 +21,6 @@ public class AI {
             zobrist = new ZobristHash();
         terminate = false;
     }
-
-    /*public void autoplay() throws Exception {
-        if(zobrist == null)
-            zobrist = new ZobristHash();
-        while(board.calculateStatus())
-        {
-            ArrayList<AIMovement> moves = board.getAvailableMoves();
-            for(AIMovement move : moves)
-            {
-                latestMovement = move;
-                board.move(move.getFrom(), move.getTo(), true, true);
-                Platform.runLater(Controller::showGame);
-                board.fullUndo();
-            }
-            Random rand = new Random();
-            AIMovement move = moves.get(rand.nextInt(moves.size()));
-            latestMovement = move;
-            board.move(move.getFrom(), move.getTo(), true, true);
-            Platform.runLater(Controller::showGame);
-            Thread.sleep(1000);
-        }
-    }*/
 
     public char choosePromotion()
     {
@@ -74,20 +49,20 @@ public class AI {
                     throw new InterruptedException();
                 latestMovement = move.clone();
                 board.move(move.getFrom(), move.getTo(), true, true);
-                if(terminate)
-                    throw new InterruptedException();
                 board.resetCalculatedLegalMoves();
-                long nextValue = minimax(depthArray[level > 3 ? 3 : level] - 1, !whiteSide);
+                long nextValue = minimax(level - 1, !whiteSide);
                 board.fullUndo();
-                if(terminate)
-                    throw new InterruptedException();
                 if ((whiteSide && nextValue >= bestValue) || (!whiteSide && nextValue <= bestValue)) {
                     bestMove = move.clone();
                     bestValue = nextValue;
                 }
             }
+            if(terminate)
+                throw new InterruptedException();
             return bestMove;
         }
+        if(terminate)
+            throw new InterruptedException();
         return null;
     }
 
@@ -111,13 +86,9 @@ public class AI {
             latestMovement = move.clone();
 
             board.move(move.getFrom(), move.getTo(), true, true);
-            if(terminate)
-                throw new InterruptedException();
             long nextValue = minimax(depth - 1, !isMax);
 
             board.fullUndo();
-            if(terminate)
-                throw new InterruptedException();
             latestMovement = previousMovement.clone();
             if ((isMax && bestValue <= nextValue) || (!isMax && bestValue >= nextValue)) {
                 bestValue = nextValue;

@@ -38,11 +38,11 @@ public class Controller {
 
 
 
-    public static void newGame(String whiteAIComboText, String blackAIComboText, boolean whiteAIActivated, boolean blackAIActivated,String delayText)
+    public static void newGame(double whiteAILevel, double blackAILevel, boolean whiteAIActivated, boolean blackAIActivated,String delayText)
     {
         try
         {
-            currentGame = new Game(whiteAIActivated ? Parametres.stringToDifficultyLevel(whiteAIComboText) : -1, blackAIActivated ? Parametres.stringToDifficultyLevel(blackAIComboText) : -1, Integer.valueOf(delayText));
+            currentGame = new Game(whiteAIActivated ? (int)whiteAILevel : -1, blackAIActivated ? (int)blackAILevel : -1, Integer.valueOf(delayText));
             showGame();
             if(currentGame.getWhiteAILevel() > -1)
             {

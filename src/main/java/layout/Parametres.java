@@ -10,27 +10,37 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 public class Parametres extends GridPane {
-    private static final String[] difficulties = {"0 - Aléatoire", "1 - Facile", "2 - Normal", "3 - Avancé"};
+    //private static final String[] difficulties = {"0 - Aléatoire", "1 - Facile", "2 - Normal", "3 - Avancé"};
     public Parametres()
     {
         super();
-        ObservableList<String> difficultiesList = FXCollections.observableArrayList();
-        difficultiesList.addAll(difficulties);
+        //ObservableList<String> difficultiesList = FXCollections.observableArrayList();
+        //difficultiesList.addAll(difficulties);
 
         CheckBox whiteAICheckbox = new CheckBox("IA Blancs");
         CheckBox blackAICheckBox = new CheckBox("IA Noirs ");
 
-        ComboBox<String> whiteDifficultyComboBox = new ComboBox<>();
-        ComboBox<String> blackDifficultyComboBox = new ComboBox<>();
-        whiteDifficultyComboBox.setItems(difficultiesList);
-        blackDifficultyComboBox.setItems(difficultiesList);
-        whiteDifficultyComboBox.setDisable(true);
-        blackDifficultyComboBox.setDisable(true);
-        whiteDifficultyComboBox.getSelectionModel().select(2);
-        blackDifficultyComboBox.getSelectionModel().select(2);
+        Slider whiteDifficultySlider = new Slider(0,8,3);
+        Slider blackDifficultySlider = new Slider(0,8,3);
 
-        whiteAICheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> whiteDifficultyComboBox.setDisable(!newValue));
-        blackAICheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> blackDifficultyComboBox.setDisable(!newValue));
+        whiteDifficultySlider.setDisable(true);
+        whiteDifficultySlider.setMajorTickUnit(1);
+        whiteDifficultySlider.setBlockIncrement(1);
+        whiteDifficultySlider.setMinorTickCount(0);
+        whiteDifficultySlider.setShowTickMarks(true);
+        whiteDifficultySlider.setShowTickLabels(true);
+        whiteDifficultySlider.setSnapToTicks(true);
+
+        blackDifficultySlider.setDisable(true);
+        blackDifficultySlider.setMajorTickUnit(1);
+        blackDifficultySlider.setBlockIncrement(1);
+        blackDifficultySlider.setMinorTickCount(0);
+        blackDifficultySlider.setShowTickMarks(true);
+        blackDifficultySlider.setShowTickLabels(true);
+        blackDifficultySlider.setSnapToTicks(true);
+
+        whiteAICheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> whiteDifficultySlider.setDisable(!newValue));
+        blackAICheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> blackDifficultySlider.setDisable(!newValue));
 
         Label delayLabel = new Label("   Délai min :  ");
         TextField minDelayField = new TextField("2");
@@ -38,10 +48,9 @@ public class Parametres extends GridPane {
 
         Button undo = new Button("Undo");
         Controller.undobutton = undo;
-        /*Button autoplay = new Button("Auto");*/
 
-        addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultyComboBox, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultyComboBox, new Label(), undo/*, autoplay*/);
+        addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultySlider, new Label("      "), newGameButton, delayLabel, minDelayField);
+        addRow(1, blackAICheckBox, new Label(),blackDifficultySlider, new Label(), undo);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
@@ -75,7 +84,7 @@ public class Parametres extends GridPane {
                 Controller.blackThread=null;
             }
             Controller.computingLabel.setText("");
-            Controller.newGame(whiteDifficultyComboBox.getValue(), blackDifficultyComboBox.getValue(), whiteAICheckbox.isSelected(), blackAICheckBox.isSelected(), minDelayField.getText());
+            Controller.newGame(whiteDifficultySlider.getValue(), blackDifficultySlider.getValue(), whiteAICheckbox.isSelected(), blackAICheckBox.isSelected(), minDelayField.getText());
 
         });
         undo.setOnAction((e)->{
@@ -85,45 +94,5 @@ public class Parametres extends GridPane {
                 undo.setDisable(true);
         });
         undo.setDisable(true);
-        /*autoplay.setOnAction((e)->{
-            if(Controller.autoplayActive)
-            {
-                if(Controller.autoplayThread != null)
-                {
-                    Controller.autoplayThread.interrupt();
-                    Controller.autoplayThread = null;
-                }
-                Controller.autoplayActive = false;
-            }else
-            {
-                if(Controller.currentGame != null && Controller.currentGame.getBoard() != null)
-                {
-                    Controller.autoplayThread = new Thread(()->{
-                        try {
-                            if (Controller.currentGame.getBoard().isWhiteTurn())
-                                Controller.currentGame.getWhiteAI().autoplay();
-                            else
-                                Controller.currentGame.getBlackAI().autoplay();
-                        }catch (Exception exc)
-                        {
-                            System.err.println(exc.getMessage());
-                        }
-                    });
-                    Controller.autoplayActive=true;
-                    Controller.autoplayThread.start();
-                }
-
-            }
-        });*/
-    }
-
-    public static int stringToDifficultyLevel(String diffString)
-    {
-        for(int i=0; i<difficulties.length; i++)
-        {
-            if(diffString.equals(difficulties[i]))
-                return i;
-        }
-        return -1;
     }
 }
