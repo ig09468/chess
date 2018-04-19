@@ -1,3 +1,3 @@
 package logique;
 
-public enum GameResult {WHITEWIN,BLACKWIN,PAT}
+public enum GameResult {WHITEWIN,BLACKWIN,PAT, FIFTYMOVE, MATERIAL, THREEFOLD}

@@ -14,8 +14,6 @@ public class Parametres extends GridPane {
     public Parametres()
     {
         super();
-        //ObservableList<String> difficultiesList = FXCollections.observableArrayList();
-        //difficultiesList.addAll(difficulties);
 
         CheckBox whiteAICheckbox = new CheckBox("IA Blancs");
         CheckBox blackAICheckBox = new CheckBox("IA Noirs ");

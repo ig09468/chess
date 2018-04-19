@@ -16,6 +16,8 @@ public class ZobristHash {
     private static final int P25 = 32*P20;
     private static final int P30 = 32*P25;
     private ArrayList<ArrayList<EvaluationRecord>> zobristMap;
+    private long whiteTurnValue;
+    private long blackTurnValue;
 
     public enum TableSize{P20, P25, P30}
     public static final TableSize DEFAULT_TABLE_SIZE = TableSize.P25;
@@ -68,6 +70,8 @@ public class ZobristHash {
         {
             zobristTable[i]=(rand.nextLong()%ZOBRIST_VALUE_MAX)+1;
         }
+        whiteTurnValue = (rand.nextLong()%ZOBRIST_VALUE_MAX)+1;
+        blackTurnValue = (rand.nextLong()%ZOBRIST_VALUE_MAX)+1;
     }
 
     private long getZobristValueFor(Point pos)
@@ -140,6 +144,15 @@ public class ZobristHash {
     public long getHashChange(MoveRecord rec, char pieceType, boolean isWhite, Point newEnPassantCandidate)
     {
         long change=0;
+        if(isWhite)
+        {
+            change+=whiteTurnValue;
+            change-=blackTurnValue;
+        }else
+        {
+            change-=whiteTurnValue;
+            change+=blackTurnValue;
+        }
         if(rec.isBigCastle())
         {
             Point rookOldPos = new Point(0,rec.getOldPos().y);

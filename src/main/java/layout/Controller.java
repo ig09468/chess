@@ -65,16 +65,16 @@ public class Controller {
     {
         if(whiteWin)
         {
-            EndGameResultStage endGameResultStage = new EndGameResultStage(mainStage, GameResult.WHITEWIN);
+            new EndGameResultStage(mainStage, GameResult.WHITEWIN);
         }else
         {
-            EndGameResultStage endGameResultStage = new EndGameResultStage(mainStage, GameResult.BLACKWIN);
+            new EndGameResultStage(mainStage, GameResult.BLACKWIN);
         }
     }
 
-    public static void staleMate()
+    public static void staleMate(GameResult reason)
     {
-        EndGameResultStage endGameResultStage = new EndGameResultStage(mainStage, GameResult.PAT);
+        new EndGameResultStage(mainStage, reason);
     }
 
     public static Image loadPiecesImage()

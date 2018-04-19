@@ -9,7 +9,6 @@ public class AI {
     private int level;
     private boolean whiteSide;
     private Board board;
-    private AIMovement latestMovement;
     private boolean terminate;
     public AI(boolean isWhiteSide,int level, Board board)
     {
@@ -17,14 +16,6 @@ public class AI {
         this.level = level;
         this.board = board;
         terminate = false;
-    }
-
-    public char choosePromotion()
-    {
-        char promotion=' ';
-        if(latestMovement != null)
-            promotion = latestMovement.getPromotion();
-        return board.promote(promotion);
     }
 
     public AIMovement getNextMove() throws InterruptedException
@@ -45,7 +36,6 @@ public class AI {
             for (AIMovement move : moves) {
                 if(terminate)
                     throw new InterruptedException();
-                latestMovement = move.clone();
                 board.move(move.getFrom(), move.getTo(), true, true);
                 board.resetCalculatedLegalMoves();
                 long nextValue = minimax(level - 1, !whiteSide);
@@ -86,13 +76,10 @@ public class AI {
         for (AIMovement move : moves) {
             if(terminate)
                 throw new InterruptedException();
-            AIMovement previousMovement = latestMovement.clone();
-            latestMovement = move.clone();
             board.move(move.getFrom(), move.getTo(), true, true);
             long nextValue = minimax(depth - 1, !isMax);
 
             board.fullUndo();
-            latestMovement = previousMovement.clone();
             if ((isMax && bestValue <= nextValue) || (!isMax && bestValue >= nextValue)) {
                 bestValue = nextValue;
             }

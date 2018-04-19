@@ -218,8 +218,13 @@ public class Board {
         return move(oldPos, newPos, true, false);
     }
 
+    public boolean move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer)
+    {
+        return move(oldPos, newPos, promotionCheck, isBuffer, null);
+    }
+
     //Bouge une piece de son ancienne coordonnée vers une nouvelle
-    public boolean move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer){
+    public boolean move(Point oldPos, Point newPos, boolean promotionCheck, boolean isBuffer, Character promote){
         Tile oldTile = getTile(oldPos);
         Tile newTile = getTile(newPos);
         boolean castlerec = false;
@@ -261,7 +266,13 @@ public class Board {
                     }else if(promotionCheck && piece instanceof Pawn && newPos.y == (piece.isWhite() ? 7 : 0))
                     {
                         needPromotion = (Pawn)piece;
-                        promoted = Controller.currentGame.askPromotion();
+                        if(promote != null)
+                        {
+                            promote(promote);
+                        }else
+                        {
+                            promoted = Controller.currentGame.askPromotion();
+                        }
                     }
                 }
                 if(!enPassantrec && !castlerec)
@@ -523,11 +534,27 @@ public class Board {
     {
         if(partieFinie)
             return false;
-        if(isInsufficientMaterial() || isThreefoldRule() || isFiftyMovesRule())
+        if(isInsufficientMaterial())
         {
             if(display)
             {
-                Controller.staleMate();
+                Controller.staleMate(GameResult.MATERIAL);
+            }
+            partieFinie=true;
+            return false;
+        } else if(isThreefoldRule())
+        {
+            if(display)
+            {
+                Controller.staleMate(GameResult.THREEFOLD);
+            }
+            partieFinie=true;
+            return false;
+        } else if(isFiftyMovesRule())
+        {
+            if(display)
+            {
+                Controller.staleMate(GameResult.FIFTYMOVE);
             }
             partieFinie=true;
             return false;
@@ -558,7 +585,7 @@ public class Board {
                         Controller.checkMate(false);
                     }else
                     {
-                        Controller.staleMate();
+                        Controller.staleMate(GameResult.PAT);
                     }
                 }else
                 {
@@ -567,7 +594,7 @@ public class Board {
                         Controller.checkMate(true);
                     }else
                     {
-                        Controller.staleMate();
+                        Controller.staleMate(GameResult.PAT);
                     }
                 }
             }

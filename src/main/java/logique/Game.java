@@ -24,12 +24,7 @@ public class Game {
     {
         if(board != null && board.promotionNeeded())
         {
-            if(board.isWhiteTurn() && whiteAI != null)
-                return whiteAI.choosePromotion();
-            else if(!board.isWhiteTurn() && blackAI !=null)
-                return blackAI.choosePromotion();
-            else
-                return showPromotion();
+            return showPromotion();
         }
         return ' ';
     }

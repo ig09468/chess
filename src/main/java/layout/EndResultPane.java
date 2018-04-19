@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import logique.GameResult;
 import pieces.King;
@@ -20,10 +21,21 @@ public class EndResultPane extends BorderPane{
         BorderPane.setAlignment(bOk, Pos.CENTER);
         this.setStyle("-fx-border-color: black; -fx-border-width: 2px;-fx-border-style: solid inside");
 
-        Label winlabel = new Label();
+        String nulReason = null;
         if(result == GameResult.PAT)
+            nulReason = "Pat";
+        else if(result == GameResult.FIFTYMOVE)
+            nulReason = "Règle des 50 coups";
+        else if(result == GameResult.MATERIAL)
+            nulReason = "Matériel insuffisant pour mater";
+        else if(result == GameResult.THREEFOLD)
+            nulReason = "Triple répétition";
+
+        Label winlabel = new Label();
+        if(nulReason != null)
         {
-            winlabel.setText("Nul ½-½");
+            winlabel.setText("Nul ½-½\n"+nulReason);
+            winlabel.setTextAlignment(TextAlignment.CENTER);
             this.setCenter(winlabel);
         }else
         {

@@ -21,7 +21,7 @@ public class AIThread extends Thread{
             if(move != null && !terminate)
             {
                 Platform.runLater(()->{
-                    Controller.currentGame.getBoard().move(move.getFrom(), move.getTo());
+                    Controller.currentGame.getBoard().move(move.getFrom(), move.getTo(), true, false, move.getPromotion() != ' ' ? move.getPromotion(): null);
                     long end = System.currentTimeMillis();
                     Controller.computingLabel.setText((isWhite ? "White" : "Black")+" move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
                     Controller.boardLock=false;
