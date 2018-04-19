@@ -36,7 +36,7 @@ public class AI {
             for (AIMovement move : moves) {
                 if(terminate)
                     throw new InterruptedException();
-                board.move(move.getFrom(), move.getTo(), true, true);
+                board.move(move.getFrom(), move.getTo(), true, true, move.getPromotion() != ' ' ? move.getPromotion() : null);
                 board.resetCalculatedLegalMoves();
                 long nextValue = minimax(level - 1, !whiteSide);
                 board.fullUndo();
@@ -57,8 +57,7 @@ public class AI {
     private long minimax(int depth, boolean isMax) throws InterruptedException {
         if(terminate)
             throw new InterruptedException();
-        ArrayList<AIMovement> moves = board.getAvailableMoves();
-        if(moves.isEmpty())
+        if(!board.calculateStatus(false))
         {
             if(isMax)
             {
@@ -68,6 +67,7 @@ public class AI {
                 return board.getKing(false).isAttacked(board) ? Long.MAX_VALUE : Long.MAX_VALUE - 10;
             }
         }
+        ArrayList<AIMovement> moves = board.getAvailableMoves();
         if(depth==0)
         {
             return board.getValue();
@@ -76,7 +76,7 @@ public class AI {
         for (AIMovement move : moves) {
             if(terminate)
                 throw new InterruptedException();
-            board.move(move.getFrom(), move.getTo(), true, true);
+            board.move(move.getFrom(), move.getTo(), true, true, move.getPromotion() != ' ' ? move.getPromotion() : null);
             long nextValue = minimax(depth - 1, !isMax);
 
             board.fullUndo();

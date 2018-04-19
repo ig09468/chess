@@ -20,6 +20,7 @@ public class Controller {
     public static Game currentGame;
     public static CheckerBoard checkerboard;
     public static Label computingLabel;
+    public static Label meanComputingLabel;
 
     public static Image piecesImage = null;
     private static final String piecesImageOrder = "KQBNRP";

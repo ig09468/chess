@@ -3,7 +3,10 @@ package ia;
 import javafx.application.Platform;
 import layout.Controller;
 
+import java.util.ArrayList;
+
 public class AIThread extends Thread{
+    public static ArrayList<Long> times = new ArrayList<>();
 
     private boolean isWhite;
     private boolean terminate;
@@ -23,7 +26,10 @@ public class AIThread extends Thread{
                 Platform.runLater(()->{
                     Controller.currentGame.getBoard().move(move.getFrom(), move.getTo(), true, false, move.getPromotion() != ' ' ? move.getPromotion(): null);
                     long end = System.currentTimeMillis();
-                    Controller.computingLabel.setText((isWhite ? "White" : "Black")+" move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
+                    times.add(end-start);
+                    long meanTime = meanTime();
+                    Controller.meanComputingLabel.setText((meanTime)/1000 + ","+String.format("%03d",(meanTime)%1000)+"s");
+                    Controller.computingLabel.setText((isWhite ? "White" : "Black")+" move computed in " + (end-start)/1000 + ","+String.format("%03d",(end-start)%1000)+"s");
                     Controller.boardLock=false;
                     Controller.undobutton.setDisable(false);
                     if(Controller.currentGame.getBoard().calculateStatus())
@@ -46,5 +52,17 @@ public class AIThread extends Thread{
         {
             Controller.currentGame.getBlackAI().terminate();
         }
+    }
+
+    private long meanTime()
+    {
+        long moy=0;
+        long count=0;
+        for(Long time : times)
+        {
+            moy+=time;
+            count++;
+        }
+        return count > 0 ? moy/count : 0;
     }
 }

@@ -1,6 +1,7 @@
 package layout;
 
 import ia.AI;
+import ia.AIThread;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,12 +44,14 @@ public class Parametres extends GridPane {
         Label delayLabel = new Label("   Délai min :  ");
         TextField minDelayField = new TextField("2");
         Button newGameButton = new Button("Nouvelle Partie");
+        Label meanLabel = new Label("");
+        Controller.meanComputingLabel = meanLabel;
 
         Button undo = new Button("Undo");
         Controller.undobutton = undo;
 
         addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultySlider, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultySlider, new Label(), undo);
+        addRow(1, blackAICheckBox, new Label(),blackDifficultySlider, new Label(), undo, meanLabel);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
@@ -83,7 +86,8 @@ public class Parametres extends GridPane {
             }
             Controller.computingLabel.setText("");
             Controller.newGame(whiteDifficultySlider.getValue(), blackDifficultySlider.getValue(), whiteAICheckbox.isSelected(), blackAICheckBox.isSelected(), minDelayField.getText());
-
+            AIThread.times.clear();
+            Controller.meanComputingLabel.setText("");
         });
         undo.setOnAction((e)->{
             Controller.currentGame.getBoard().fullUndo();

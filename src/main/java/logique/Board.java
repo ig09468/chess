@@ -268,7 +268,7 @@ public class Board {
                         needPromotion = (Pawn)piece;
                         if(promote != null)
                         {
-                            promote(promote);
+                            promoted = promote(promote);
                         }else
                         {
                             promoted = Controller.currentGame.askPromotion();
