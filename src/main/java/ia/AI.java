@@ -20,17 +20,17 @@ public class AI {
 
     public AIMovement getNextMove() throws InterruptedException
     {
+        Random rand = new Random();
         ArrayList<AIMovement> moves =  board.getAvailableMoves();
         if(level < 1)
         {
             if(!moves.isEmpty())
             {
-                Random rand = new Random();
                 return moves.get(rand.nextInt(moves.size()));
             }
         }else
         {
-            AIMovement bestMove = null;
+            ArrayList<AIMovement> bestMove = new ArrayList<>();
             long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
 
             for (AIMovement move : moves) {
@@ -40,14 +40,23 @@ public class AI {
                 board.resetCalculatedLegalMoves();
                 long nextValue = minimax(level - 1, !whiteSide);
                 board.fullUndo();
-                if ((whiteSide && nextValue >= bestValue) || (!whiteSide && nextValue <= bestValue)) {
-                    bestMove = move.clone();
+                if(nextValue == bestValue)
+                {
+                    bestMove.add(move.clone());
+                }
+                if ((whiteSide && nextValue > bestValue) || (!whiteSide && nextValue < bestValue)) {
+                    bestMove.clear();
+                    bestMove.add(move.clone());
                     bestValue = nextValue;
                 }
             }
             if(terminate)
                 throw new InterruptedException();
-            return bestMove;
+            if(bestMove.isEmpty())
+                return null;
+            if(bestMove.size() == 1)
+                return bestMove.get(0);
+            return bestMove.get(rand.nextInt(bestMove.size()));
         }
         if(terminate)
             throw new InterruptedException();
