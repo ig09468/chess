@@ -667,17 +667,56 @@ public class Board {
                 index = piece.toShortName() - 'B';
                 if(index >=0 && index < EvaluationFunctionValues.pieceValues.length)
                 {
+                    Point pos = piece.getPosition();
                     if(piece.isWhite())
                     {
-                        value+=EvaluationFunctionValues.pieceValues[index];
+                        value+=EvaluationFunctionValues.pieceValues[index]
+                                + EvaluationFunctionValues.pieceSquareTable[piece instanceof King && isEndGame() ? index-1 : index][pos.x][pos.y];
                     }else
                     {
-                        value-=EvaluationFunctionValues.pieceValues[index];
+                        value-=EvaluationFunctionValues.pieceValues[index]
+                                + EvaluationFunctionValues.pieceSquareTable[piece instanceof King && isEndGame() ? index-1 : index][pos.x][7-pos.y];
                     }
                 }
             }
         }
         return value;
+    }
+
+    private boolean isEndGame() {
+        int whitePiece=0;
+        int blackPiece=0;
+        boolean whiteQueen=false;
+        boolean blackQueen=false;
+
+        for(Piece piece : pieceList)
+        {
+            if(piece instanceof Queen)
+            {
+                if(piece.isWhite())
+                {
+                    if(whiteQueen)
+                        return false;
+                    whiteQueen=true;
+                }else
+                {
+                    if(blackQueen)
+                        return false;
+                    blackQueen=true;
+                }
+            }
+            if(!(piece instanceof King) && !(piece instanceof Pawn))
+            {
+                if(piece.isWhite())
+                {
+                    whitePiece++;
+                }else
+                {
+                    blackPiece++;
+                }
+            }
+        }
+        return (!whiteQueen || whitePiece<=2) && (!blackQueen || blackPiece <=2);
     }
 
     public MoveRecord getLastMove()
