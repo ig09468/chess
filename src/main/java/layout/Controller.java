@@ -28,13 +28,12 @@ public class Controller {
     public static Button undobutton;
     private static int pieceWidth=0;
     private static int pieceHeight=0;
-    public static boolean autoplayActive=false;
-    public static Thread autoplayThread;
-    public static final ZobristHash zobrist = new ZobristHash();
 
     public static AIThread whiteThread = null;
     public static AIThread blackThread = null;
     public static boolean boardLock = false;
+
+    public static final ZobristHash zobrist = new ZobristHash();
 
 
 

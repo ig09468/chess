@@ -1,6 +1,7 @@
 package ia;
 
 import logique.Board;
+import logique.MoveRecord;
 import logique.Tile;
 import pieces.Pawn;
 
@@ -69,6 +70,11 @@ public class ZobristHash {
         }
     }
 
+    private long getZobristValueFor(Point pos)
+    {
+        return pos.x >=0 && pos.x <8 && pos.y >=0 && pos.y<8 ? zobristTable[8*pos.x + 13*pos.y] : 0;
+    }
+
     private long getZobristValueFor(Tile tile, Board board)
     {
         if(tile != null)
@@ -129,6 +135,85 @@ public class ZobristHash {
             }
         }
         return hash;
+    }
+
+    public long getHashChange(MoveRecord rec, char pieceType, boolean isWhite, Point newEnPassantCandidate)
+    {
+        long change=0;
+        if(rec.isBigCastle())
+        {
+            Point rookOldPos = new Point(0,rec.getOldPos().y);
+            Point rookNewPos = new Point(3,rec.getOldPos().y);
+
+            change-=getZobristValueFor(rookOldPos, 'U', isWhite);
+            change+=getZobristValueFor(rookNewPos, 'R', isWhite);
+            change-=getZobristValueFor(rookNewPos);
+            change+=getZobristValueFor(rookOldPos);
+
+            change-=getZobristValueFor(rec.getOldPos(),'T', isWhite);
+            change+=getZobristValueFor(rec.getNewPos(),'K', isWhite);
+            change-=getZobristValueFor(rec.getNewPos());
+            change+=getZobristValueFor(rec.getOldPos());
+        }else if(rec.isSmallCastle())
+        {
+            Point rookOldPos = new Point(7,rec.getOldPos().y);
+            Point rookNewPos = new Point(5,rec.getOldPos().y);
+
+            change-=getZobristValueFor(rookOldPos, 'U', isWhite);
+            change+=getZobristValueFor(rookNewPos, 'R', isWhite);
+            change-=getZobristValueFor(rookNewPos);
+            change+=getZobristValueFor(rookOldPos);
+
+            change-=getZobristValueFor(rec.getOldPos(),'T', isWhite);
+            change+=getZobristValueFor(rec.getNewPos(),'K', isWhite);
+            change-=getZobristValueFor(rec.getNewPos());
+            change+=getZobristValueFor(rec.getOldPos());
+        }else if(rec.isPriseEnPassant())
+        {
+            Point capturePos = new Point(rec.getOldPos().x, rec.getNewPos().y);
+
+            change-=getZobristValueFor(capturePos, 'S', !isWhite);
+            change+=getZobristValueFor(capturePos);
+
+            change-=getZobristValueFor(rec.getOldPos(), 'P', isWhite);
+            change+=getZobristValueFor(rec.getOldPos());
+            change-=getZobristValueFor(rec.getNewPos());
+            change+=getZobristValueFor(rec.getNewPos(), 'P', isWhite);
+        }else
+        {
+            Point op = rec.getOldPos();
+            Point np = rec.getNewPos();
+            char capture = rec.getCapture();
+            char promotion = rec.getPromotion();
+
+            if(rec.hasNeverMoved())
+            {
+                if(pieceType == 'R')
+                    change-=getZobristValueFor(op, 'U', isWhite);
+                else if(pieceType == 'K')
+                    change-=getZobristValueFor(op, 'T', isWhite);
+                else
+                    change-=getZobristValueFor(op, pieceType, isWhite);
+            }else
+            {
+                change-=getZobristValueFor(op, op.equals(rec.getEnPassantCandidate()) ? 'S' : pieceType, isWhite);
+            }
+            change+=getZobristValueFor(op);
+            if(capture == ' ')
+            {
+                change-=getZobristValueFor(np);
+            }else
+            {
+                change-=getZobristValueFor(np, capture, !isWhite);
+            }
+            change+=getZobristValueFor(np, promotion == ' ' ? pieceType : promotion, isWhite);
+        }
+        if(newEnPassantCandidate != null)
+        {
+            change-=getZobristValueFor(newEnPassantCandidate, 'P', isWhite);
+            change+=getZobristValueFor(newEnPassantCandidate, 'S', isWhite);
+        }
+        return change;
     }
 
     public EvaluationRecord get(long hash)

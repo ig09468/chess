@@ -17,17 +17,18 @@ public class MoveRecord {
     private boolean priseEnPassant;
     private boolean hasNeverMoved;
     private Point enPassantCandidate;
+    private boolean isPawnMove;
 
     public static MoveRecord BIGCASTLE(Point oldPos, Point newPos,Point enPassantCandidate)
     {
-        return new MoveRecord(oldPos, newPos, enPassantCandidate,' ', ' ', true, false, false, true);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate,' ', ' ', true, false, false, true, false);
     }
     public static MoveRecord SMALLCASTLE(Point oldPos, Point newPos,Point enPassantCandidate)
     {
-        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, true, false, true);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, true, false, true, false);
     }
 
-    private MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved) {
+    private MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, char promotion, boolean isBigCastle, boolean isSmallCastle, boolean isPriseEnPassant, boolean hasNeverMoved, boolean isPawnMove) {
         this.oldPos = oldPos;
         this.newPos = newPos;
         this.capture = capture;
@@ -37,26 +38,27 @@ public class MoveRecord {
         this.priseEnPassant = isPriseEnPassant;
         this.hasNeverMoved = hasNeverMoved;
         this.enPassantCandidate = enPassantCandidate;
+        this.isPawnMove = isPawnMove;
     }
 
-    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate,char capture, char promotion, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate,char capture, char promotion, boolean hasNeverMoved, boolean isPawnMove)
     {
-        this(oldPos, newPos, enPassantCandidate, capture, promotion, false, false, false, hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, capture, promotion, false, false, false, hasNeverMoved, isPawnMove);
     }
 
-    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, char capture, boolean hasNeverMoved, boolean isPawnMove)
     {
-        this(oldPos, newPos, enPassantCandidate, capture, ' ', hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, capture, ' ', hasNeverMoved, isPawnMove);
     }
 
-    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, boolean hasNeverMoved)
+    public MoveRecord(Point oldPos, Point newPos, Point enPassantCandidate, boolean hasNeverMoved, boolean isPawnMove)
     {
-        this(oldPos, newPos, enPassantCandidate, ' ', hasNeverMoved);
+        this(oldPos, newPos, enPassantCandidate, ' ', hasNeverMoved, isPawnMove);
     }
 
     public static MoveRecord priseEnPassant(Point oldPos, Point newPos, Point enPassantCandidate)
     {
-        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, false, true, false);
+        return new MoveRecord(oldPos, newPos, enPassantCandidate, ' ', ' ', false, false, true, false, true);
     }
 
     public Point getNewPos() {
@@ -120,5 +122,9 @@ public class MoveRecord {
             return "";
         }
 
+    }
+
+    public boolean getIsPawnMove() {
+        return isPawnMove;
     }
 }

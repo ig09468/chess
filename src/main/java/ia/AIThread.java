@@ -26,7 +26,8 @@ public class AIThread extends Thread{
                     Controller.computingLabel.setText((isWhite ? "White" : "Black")+" move computed in " + (end-start)/1000 + "."+String.format("%3d",(end-start)%1000)+"s");
                     Controller.boardLock=false;
                     Controller.undobutton.setDisable(false);
-                    Controller.doNextMove();
+                    if(Controller.currentGame.getBoard().calculateStatus())
+                        Controller.doNextMove();
                 });
             }
         } catch (InterruptedException e) {

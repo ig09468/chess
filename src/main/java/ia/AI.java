@@ -10,15 +10,12 @@ public class AI {
     private boolean whiteSide;
     private Board board;
     private AIMovement latestMovement;
-    private static ZobristHash zobrist=null;
     private boolean terminate;
     public AI(boolean isWhiteSide,int level, Board board)
     {
         this.whiteSide = isWhiteSide;
         this.level = level;
         this.board = board;
-        if(zobrist == null)
-            zobrist = new ZobristHash();
         terminate = false;
     }
 
@@ -44,6 +41,7 @@ public class AI {
         {
             AIMovement bestMove = null;
             long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
+
             for (AIMovement move : moves) {
                 if(terminate)
                     throw new InterruptedException();
@@ -72,7 +70,13 @@ public class AI {
         ArrayList<AIMovement> moves = board.getAvailableMoves();
         if(moves.isEmpty())
         {
-            return isMax ? Long.MIN_VALUE : Long.MAX_VALUE;
+            if(isMax)
+            {
+                return board.getKing(true).isAttacked(board) ? Long.MIN_VALUE : Long.MIN_VALUE + 10;
+            }else
+            {
+                return board.getKing(false).isAttacked(board) ? Long.MAX_VALUE : Long.MAX_VALUE - 10;
+            }
         }
         if(depth==0)
         {
@@ -84,7 +88,6 @@ public class AI {
                 throw new InterruptedException();
             AIMovement previousMovement = latestMovement.clone();
             latestMovement = move.clone();
-
             board.move(move.getFrom(), move.getTo(), true, true);
             long nextValue = minimax(depth - 1, !isMax);
 

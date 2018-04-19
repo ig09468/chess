@@ -11,8 +11,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Board {
+    private long hash;
 
-    public static String[] defaultBoard = {
+    public static final String[] defaultBoard = {
             "WRWNWBWQWKWBWNWR",
             "WPWPWPWPWPWPWPWP",
             "0000000000000000",
@@ -22,9 +23,6 @@ public class Board {
             "BPBPBPBPBPBPBPBP",
             "BRBNBBBQBKBBBNBR"
     };
-
-    //Cases sélectionnées
-    private ArrayList<Tile> selectedTiles;
 
     //Pièce sélectionée
     private Piece selectedPiece;
@@ -54,6 +52,9 @@ public class Board {
     //Pion necessitant une promotion
     private Pawn needPromotion;
 
+    //Partie finie
+    private boolean partieFinie;
+
     public Board()
     {
         tileList = new Tile[8][8];
@@ -65,6 +66,7 @@ public class Board {
         candidatPriseEnPassant=null;
         needPromotion=null;
         isWhiteTurn=true;
+        partieFinie=false;
 
         boolean isWhite;
         Piece piece;
@@ -111,6 +113,7 @@ public class Board {
                 }
             }
         }
+        hash = Controller.zobrist.calculateZobristHash(this);
     }
 
     public Board(Board board)
@@ -121,9 +124,12 @@ public class Board {
         boardState=null;
         whiteKing=null;
         blackKing=null;
+        selectedPiece=board.selectedPiece;
         candidatPriseEnPassant=board.candidatPriseEnPassant != null ? (Point)board.candidatPriseEnPassant.clone() : null;
         needPromotion=null;
         isWhiteTurn=board.isWhiteTurn;
+        partieFinie=board.partieFinie;
+        hash= board.hash;
 
         Piece piece;
         for(int x=0; x<8;x++)
@@ -250,8 +256,9 @@ public class Board {
                     }
                 }
                 if(!enPassantrec && !castlerec)
-                    this.moveHistory.add(new MoveRecord(oldPos, newPos, candidatPriseEnPassant,capt, promoted, neverMovedBefore));
+                    this.moveHistory.add(new MoveRecord(oldPos, newPos, candidatPriseEnPassant,capt, promoted, neverMovedBefore, piece instanceof Pawn));
                 candidatPriseEnPassant = (piece instanceof Pawn && Math.abs(oldPos.y - newPos.y) == 2) ? (Point)piece.getPosition().clone() : null;
+                hash+=Controller.zobrist.getHashChange(moveHistory.get(moveHistory.size()-1),piece.toShortName(), isWhiteTurn, candidatPriseEnPassant);
                 afterMove(isBuffer);
                 return true;
             }else
@@ -291,8 +298,10 @@ public class Board {
     {
         if(this.moveHistory.size() > 0)
         {
+            partieFinie=false;
             this.isWhiteTurn = !this.isWhiteTurn;
             MoveRecord rec = this.moveHistory.remove(this.moveHistory.size()-1);
+            hash-=Controller.zobrist.getHashChange(rec,rec.getPromotion() != ' ' ? 'P' : getPiece(rec.getNewPos()).toShortName() , isWhiteTurn, candidatPriseEnPassant);
             Tile oldTile = getTile(rec.getOldPos());
             Tile newTile = getTile(rec.getNewPos());
             if(oldTile!= null && newTile != null && newTile.isOccupied() && !oldTile.isOccupied())
@@ -598,7 +607,17 @@ public class Board {
 
     public boolean calculateStatus(boolean display)
     {
-        //TODO Ajouter la regle des 50 coups et le nul par materiel insuffisant
+        if(partieFinie)
+            return false;
+        if(isInsufficientMaterial() || isFiftyMovesRule())
+        {
+            if(display)
+            {
+                Controller.staleMate();
+            }
+            partieFinie=true;
+            return false;
+        }
         Board that = this;
         Piece[] pieceArray = new Piece[pieceList.size()];
         pieceList.toArray(pieceArray);
@@ -638,8 +657,10 @@ public class Board {
                     }
                 }
             }
+            partieFinie=true;
             return false;
         }
+        partieFinie=false;
         return true;
     }
 
@@ -755,5 +776,63 @@ public class Board {
             sb.append(move).append(" ");
         }
         return sb.toString();
+    }
+
+    public boolean isFiftyMovesRule() //Un move, dans le jargon de la FIDE, est constitué des 2 traits
+    {
+        if(moveHistory.size() < 100)
+            return false;
+        int counter=0;
+        for(int i=moveHistory.size()-1; i>=0 && counter <= 100; i--, counter++)
+        {
+            if(moveHistory.get(i).getIsPawnMove() ||moveHistory.get(i).getCapture() != ' ' || moveHistory.get(i).isPriseEnPassant())
+                return false;
+        }
+        return true;
+    }
+
+    public boolean isInsufficientMaterial()
+    {
+        boolean bishopTileWhite=false;
+        int nbBishop=0;
+        boolean seenAKnight=false;
+        for(Piece piece : pieceList)
+        {
+            if(piece.isOnBoard())
+            {
+                if(piece instanceof Bishop)
+                {
+                    if(seenAKnight) //Si il y a déjà un cavalier, il y a possibilité de mat
+                        return false;
+                    if(nbBishop==0)
+                    {
+                        bishopTileWhite=isLightTile(piece.getPosition());
+                    }else if(isLightTile(piece.getPosition()) != bishopTileWhite) //Si des fous sont sur des cases de couleur différente, il y a possibilité de mat
+                    {
+                        return false;
+                    }
+                    nbBishop++;
+                }else if(piece instanceof Knight)
+                {
+                    if(seenAKnight || nbBishop > 0) //Si il y a plus d'un cavalier sur le terrain, ou si il y a un fou, il y a possibilité de mat
+                        return false;
+                    seenAKnight=true;
+                }else if(!(piece instanceof King)) //Si il y a une piece différente d'un fou, d'un cavalier ou d'un roi sur le terrain, il y a possibilité de mat
+                {
+                    return false;
+                }
+            }
+        }
+        //Si on a élucidé les autres hypothèses, alors il n'y a que des fous sur la même couleur de case, ou un seul cavalier, ou uniquement les rois, ce qui est insuffisant
+        return true;
+    }
+
+    private boolean isLightTile(Point pos)
+    {
+        return pos.x%2 != pos.y%2;
+    }
+
+    public long getHash() {
+        return hash;
     }
 }
