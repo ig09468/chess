@@ -127,4 +127,9 @@ public class MoveRecord {
     public boolean getIsPawnMove() {
         return isPawnMove;
     }
+
+    @Override
+    protected MoveRecord clone(){
+        return new MoveRecord((Point)oldPos.clone(), (Point)newPos.clone(), (Point)enPassantCandidate.clone(), capture, promotion, bigCastle, smallCastle, priseEnPassant, hasNeverMoved, isPawnMove);
+    }
 }

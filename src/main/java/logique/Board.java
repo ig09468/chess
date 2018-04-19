@@ -9,6 +9,7 @@ import utils.ChessUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Board {
     private long hash;
@@ -55,6 +56,9 @@ public class Board {
     //Partie finie
     private boolean partieFinie;
 
+    //Threefold Hash check
+    private ArrayList<HashRecord> hashRecords;
+
     public Board()
     {
         tileList = new Tile[8][8];
@@ -67,6 +71,7 @@ public class Board {
         needPromotion=null;
         isWhiteTurn=true;
         partieFinie=false;
+        hashRecords=new ArrayList<>();
 
         boolean isWhite;
         Piece piece;
@@ -120,7 +125,7 @@ public class Board {
     {
         tileList = new Tile[8][8];
         pieceList= new ArrayList<>();
-        moveHistory=new ArrayList<>();
+
         boardState=null;
         whiteKing=null;
         blackKing=null;
@@ -130,6 +135,10 @@ public class Board {
         isWhiteTurn=board.isWhiteTurn;
         partieFinie=board.partieFinie;
         hash= board.hash;
+        hashRecords = new ArrayList<>(board.hashRecords.size());
+        for(HashRecord hr : board.hashRecords) hashRecords.add(hr.clone());
+        moveHistory=new ArrayList<>(board.moveHistory.size());
+        for(MoveRecord mr : board.moveHistory) moveHistory.add(mr.clone());
 
         Piece piece;
         for(int x=0; x<8;x++)
@@ -298,6 +307,7 @@ public class Board {
     {
         if(this.moveHistory.size() > 0)
         {
+            removeHashRecord();
             partieFinie=false;
             this.isWhiteTurn = !this.isWhiteTurn;
             MoveRecord rec = this.moveHistory.remove(this.moveHistory.size()-1);
@@ -449,103 +459,6 @@ public class Board {
         return false;
     }
 
-    public ArrayList<Byte> getBoardState() {
-        if(boardState == null)
-        {
-            boardState = toBoardRecord();
-        }
-        return boardState;
-    }
-
-    public ArrayList<Byte> toBoardRecord()
-    {
-        /*Record :
-            24 octets max
-            Case vide -     0
-            Pawn -          1W1IsEnPassantCandidat
-            Rook -          1W01HasNeverMoved
-            Bishop -        1W0010
-            Knight -        1W0011
-            Queen -         1W0001
-            King -          1W0000HasNeverMoved
-        */
-
-        short current=0;
-        short copy;
-        int cursorCurrent=0;
-        int cursorInc=0;
-        ArrayList<Byte> bytes = new ArrayList<>();
-        Point tilePos = new Point(0,0);
-        Tile tile;
-        for(int i=0; i<8;i++)
-        {
-            for(int j=0; j<8;j++)
-            {
-                tilePos.x = i;
-                tilePos.y = j;
-                tile = this.getTile(tilePos);
-                short toggle = 1;
-                if(tile.isOccupied())
-                {
-                    Piece piece = tile.getPiece();
-                    toggle = piece.isWhite() ? (short)3 : (short)2;
-                    if(piece instanceof Pawn)
-                    {
-                        toggle <<= 2;
-                        toggle += (compareToEnPassantCandidat((Pawn)piece)) ? 3 : 2;
-                        cursorInc = 4;
-                    }else if(piece instanceof Rook)
-                    {
-                        toggle <<= 3;
-                        toggle += piece.getHasNeverMoved() ? 3 : 2;
-                        cursorInc = 5;
-                    }else if(piece instanceof Bishop)
-                    {
-                        toggle <<=4;
-                        toggle += 2;
-                        cursorInc=6;
-                    }else if(piece instanceof Knight)
-                    {
-                        toggle <<=4;
-                        toggle += 3;
-                        cursorInc=6;
-                    }else if(piece instanceof Queen)
-                    {
-                        toggle <<=4;
-                        toggle += 1;
-                        cursorInc=6;
-                    }else if(piece instanceof King)
-                    {
-                        toggle <<=5;
-                        if(piece.getHasNeverMoved())
-                            toggle+=1;
-                        cursorInc=7;
-                    }
-                    toggle <<= 16 - cursorInc - cursorCurrent;
-                    current |= toggle;
-                }else
-                {
-
-                    toggle <<= 15-cursorCurrent;
-                    toggle = (short)~toggle;
-                    current &= toggle;
-                    cursorInc=1;
-                }
-                cursorCurrent += cursorInc;
-                if(cursorCurrent>=8)
-                {
-                    copy = current;
-                    copy >>= 8;
-                    bytes.add((byte)copy);
-                    current <<=8;
-                    cursorCurrent-=8;
-                }
-            }
-
-        }
-        return bytes;
-    }
-
     public char promote(char piece)
     {
         if(promotionNeeded())
@@ -584,6 +497,7 @@ public class Board {
 
     private void afterMove(boolean isBuffer)
     {
+        addHashRecord();
         this.boardState = null;
         isWhiteTurn = !isWhiteTurn;
         if(!isBuffer)
@@ -609,7 +523,7 @@ public class Board {
     {
         if(partieFinie)
             return false;
-        if(isInsufficientMaterial() || isFiftyMovesRule())
+        if(isInsufficientMaterial() || isThreefoldRule() || isFiftyMovesRule())
         {
             if(display)
             {
@@ -744,19 +658,6 @@ public class Board {
         return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size()-1);
     }
 
-    public void getBoardRepresentation()
-    {
-        for(int x = 7; x>=0;x--)
-        {
-            for(int y=0; y<8;y++)
-            {
-                Piece piece = getPiece(new Point(x,y));
-                System.out.print(piece == null ? "  ," : piece.toShortName()+(piece.isWhite() ? "W" : "B")+",");
-            }
-            System.out.println();
-        }
-    }
-
     public void fullUndo()
     {
         resetCalculatedLegalMoves();
@@ -827,6 +728,16 @@ public class Board {
         return true;
     }
 
+    public boolean isThreefoldRule()
+    {
+        for(HashRecord hr : hashRecords)
+        {
+            if(hr.isThreefold())
+                return true;
+        }
+        return false;
+    }
+
     private boolean isLightTile(Point pos)
     {
         return pos.x%2 != pos.y%2;
@@ -834,5 +745,43 @@ public class Board {
 
     public long getHash() {
         return hash;
+    }
+
+    private void addHashRecord()
+    {
+        HashRecord hr = new HashRecord(hash);
+        if(hashRecords.isEmpty())
+        {
+            hashRecords.add(hr);
+        }else
+        {
+            int index = Arrays.binarySearch(hashRecords.toArray(), hr);
+            if(index < 0)
+            {
+                hashRecords.add(-(index+1), hr);
+            }else
+            {
+                hashRecords.get(index).inc();
+            }
+        }
+    }
+
+    private void removeHashRecord()
+    {
+        HashRecord hr = new HashRecord(hash);
+        if(!hashRecords.isEmpty())
+        {
+            int index = Arrays.binarySearch(hashRecords.toArray(), hr);
+            if(index >= 0)
+            {
+                HashRecord ohr = hashRecords.get(index);
+                ohr.dec();
+                if(ohr.isNever())
+                {
+                    hashRecords.remove(index);
+                }
+            }
+
+        }
     }
 }
