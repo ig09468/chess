@@ -259,6 +259,7 @@ public class ZobristHash {
             if(list.get(subIndex).hashCode() != ev.hashCode())
             {
                 //TODO mettre à jour les valeurs si meilleures
+
             }
         }else
         {

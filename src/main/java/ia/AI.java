@@ -3,6 +3,7 @@ package ia;
 import logique.Board;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 public class AI {
@@ -30,6 +31,7 @@ public class AI {
             }
         }else
         {
+            moves.sort((a,b)-> Long.compare(b.getKillerMoveValue(), a.getKillerMoveValue()));
             ArrayList<AIMovement> bestMove = new ArrayList<>();
             long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
             long alpha = Long.MIN_VALUE;
@@ -89,11 +91,12 @@ public class AI {
                 return board.getKing(false).isAttacked(board) ? Long.MAX_VALUE : Long.MAX_VALUE - 10;
             }
         }
-        ArrayList<AIMovement> moves = board.getAvailableMoves();
         if(depth==0)
         {
             return board.getValue();
         }
+        ArrayList<AIMovement> moves = board.getAvailableMoves();
+        moves.sort((a,b)-> Long.compare(b.getKillerMoveValue(), a.getKillerMoveValue()));
         long bestValue = isMax ? Long.MIN_VALUE : Long.MAX_VALUE;
         for (AIMovement move : moves) {
             if(terminate)

@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.Objects;
 
 public class EvaluationRecord {
+    public enum ValueType {ALPHACUT, BETACUT, NORMAL}
     private long zobristHash;
     private long alpha;
     private long beta;
