@@ -32,13 +32,14 @@ public class AI {
         {
             ArrayList<AIMovement> bestMove = new ArrayList<>();
             long bestValue = whiteSide ? Long.MIN_VALUE : Long.MAX_VALUE;
-
+            long alpha = Long.MIN_VALUE;
+            long beta = Long.MAX_VALUE;
             for (AIMovement move : moves) {
                 if(terminate)
                     throw new InterruptedException();
                 board.move(move.getFrom(), move.getTo(), true, true, move.getPromotion() != ' ' ? move.getPromotion() : null);
                 board.resetCalculatedLegalMoves();
-                long nextValue = minimax(level - 1, !whiteSide);
+                long nextValue = minimax(level - 1, alpha, beta,!whiteSide);
                 board.fullUndo();
                 if(nextValue == bestValue)
                 {
@@ -49,6 +50,18 @@ public class AI {
                     bestMove.add(move.clone());
                     bestValue = nextValue;
                 }
+                if(whiteSide && bestValue >= beta || (!whiteSide && bestValue<=alpha))
+                    break;
+                if(whiteSide)
+                {
+                    if(bestValue > alpha)
+                        alpha = bestValue;
+                }else
+                {
+                    if(bestValue <beta)
+                        beta = bestValue;
+                }
+
             }
             if(terminate)
                 throw new InterruptedException();
@@ -63,7 +76,7 @@ public class AI {
         return null;
     }
 
-    private long minimax(int depth, boolean isMax) throws InterruptedException {
+    private long minimax(int depth, long alpha, long beta, boolean isMax) throws InterruptedException {
         if(terminate)
             throw new InterruptedException();
         if(!board.calculateStatus(false))
@@ -86,12 +99,24 @@ public class AI {
             if(terminate)
                 throw new InterruptedException();
             board.move(move.getFrom(), move.getTo(), true, true, move.getPromotion() != ' ' ? move.getPromotion() : null);
-            long nextValue = minimax(depth - 1, !isMax);
+            long nextValue = minimax(depth - 1,alpha,beta, !isMax);
 
             board.fullUndo();
             if ((isMax && bestValue <= nextValue) || (!isMax && bestValue >= nextValue)) {
                 bestValue = nextValue;
             }
+            if(isMax)
+            {
+                if(bestValue > alpha)
+                    alpha = bestValue;
+            }else
+            {
+                if(bestValue < beta)
+                    beta = bestValue;
+            }
+            if(beta <= alpha)
+                break;
+
         }
         return bestValue;
     }
