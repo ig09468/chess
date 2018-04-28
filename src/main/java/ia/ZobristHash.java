@@ -15,7 +15,8 @@ public class ZobristHash {
     private static final int P20 = 1048576;
     private static final int P25 = 32*P20;
     private static final int P30 = 32*P25;
-    private ArrayList<ArrayList<EvaluationRecord>> zobristMap;
+    //private ArrayList<ArrayList<EvaluationRecord>> zobristMap;
+    private Object[] zobristMap;
     private long whiteTurnValue;
     private long blackTurnValue;
 
@@ -33,11 +34,12 @@ public class ZobristHash {
     {
         generateZobristTable(seed);
         int size = tableSize== TableSize.P20 ? P20 : tableSize==TableSize.P25? P25: P30;
-        zobristMap = new ArrayList<>(size);
-        for(int i=0; i<size; i++)
+        //zobristMap = new ArrayList<>(size);
+        zobristMap = new Object[size];
+        /*for(int i=0; i<size; i++)
         {
             zobristMap.add(null);
-        }
+        }*/
         chosenSize = tableSize;
     }
 
@@ -49,11 +51,13 @@ public class ZobristHash {
     {
         generateZobristTable(null);
         int size = tableSize== TableSize.P20 ? P20 : tableSize==TableSize.P25? P25: P30;
-        zobristMap = new ArrayList<>(size);
-        for(int i=0; i<size; i++)
+        //zobristMap = new ArrayList<>(size);
+        zobristMap = new Object[size];
+        /*for(int i=0; i<size; i++)
         {
-            zobristMap.add(null);
-        }
+            //zobristMap.add(null);
+        }*/
+        zobristMap = new Object[size];
         chosenSize = tableSize;
     }
 
@@ -233,7 +237,8 @@ public class ZobristHash {
     {
         int mask = chosenSize == TableSize.P30 ? 0x3FFFFFFF : chosenSize == TableSize.P25 ? 0x1FFFFFF : 0xFFFFF;
         int index = (int)(hash&mask);
-        ArrayList<EvaluationRecord> list = zobristMap.get(index);
+        //ArrayList<EvaluationRecord> list = zobristMap.get(index);
+        ArrayList<EvaluationRecord> list = (ArrayList<EvaluationRecord>) zobristMap[index];
         if(list ==null)
             return null;
         for(EvaluationRecord ev : list)
@@ -248,22 +253,70 @@ public class ZobristHash {
     {
         int mask = chosenSize == TableSize.P30 ? 0x3FFFFFFF : chosenSize == TableSize.P25 ? 0x1FFFFFF : 0xFFFFF;
         int index = (int)(hash&mask);
-        ArrayList<EvaluationRecord> list = zobristMap.get(index);
+        //ArrayList<EvaluationRecord> list = zobristMap.get(index);
+        ArrayList<EvaluationRecord> list = (ArrayList<EvaluationRecord>) zobristMap[index];
+        boolean replace = false;
         if(list == null)
         {
-            zobristMap.set(index, new ArrayList<>());
-            zobristMap.get(index).add(ev);
+            //zobristMap.set(index, new ArrayList<>());
+            zobristMap[index] =  new ArrayList<EvaluationRecord>();
+            //zobristMap.get(index).add(ev);
+            ((ArrayList<EvaluationRecord>)zobristMap[index]).add(ev);
         }else if(list.contains(ev))
         {
             int subIndex = list.indexOf(ev);
-            if(list.get(subIndex).hashCode() != ev.hashCode())
+            EvaluationRecord old = list.get(subIndex);
+            if(old.getType() == EvaluationRecord.ValueType.NORMAL)
             {
-                //TODO mettre à jour les valeurs si meilleures
-
+                if(ev.getType() == EvaluationRecord.ValueType.NORMAL)
+                {
+                    if(old.getDepth() < ev.getDepth()) {
+                        replace = true;
+                    }
+                }
+            }else
+            {
+                if(ev.getDepth() >= old.getDepth())
+                {
+                    if(ev.getType() == EvaluationRecord.ValueType.NORMAL)
+                    {
+                        replace=true;
+                    }else
+                    {
+                        if(old.getType() == EvaluationRecord.ValueType.BETACUT && ev.getType() == EvaluationRecord.ValueType.BETACUT)
+                        {
+                            if(old.getBeta() < ev.getBeta())
+                            {
+                                replace = true;
+                            }
+                        }else if(old.getType() == EvaluationRecord.ValueType.ALPHACUT && ev.getType() == EvaluationRecord.ValueType.ALPHACUT)
+                        {
+                            if(old.getAlpha() > ev.getAlpha())
+                            {
+                                replace = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if(replace)
+            {
+                list.set(subIndex, ev);
             }
         }else
         {
-            zobristMap.get(index).add(ev);
+            //zobristMap.get(index).add(ev);
+            ((ArrayList<EvaluationRecord>)zobristMap[index]).add(ev);
+        }
+    }
+
+    public void reset()
+    {
+        long size = zobristMap.length;//zobristMap.size();
+        for(int i=0; i<size; i++)
+        {
+            //zobristMap.set(i,null);
+            zobristMap[i] = null;
         }
     }
 }

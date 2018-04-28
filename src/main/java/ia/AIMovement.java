@@ -3,6 +3,7 @@ package ia;
 import utils.ChessUtils;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class AIMovement {
     private long killerMoveValue;
@@ -47,5 +48,15 @@ public class AIMovement {
     public String toString()
     {
         return ChessUtils.toStringPos(from)+ ChessUtils.toStringPos(to)+promotion;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AIMovement that = (AIMovement) o;
+        return promotion == that.promotion &&
+                Objects.equals(from, that.from) &&
+                Objects.equals(to, that.to);
     }
 }
