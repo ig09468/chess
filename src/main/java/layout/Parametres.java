@@ -50,8 +50,8 @@ public class Parametres extends GridPane {
         Button undo = new Button("Undo");
         Controller.undobutton = undo;
 
-        addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultySlider, new Label("      "), newGameButton, delayLabel, minDelayField);
-        addRow(1, blackAICheckBox, new Label(),blackDifficultySlider, new Label(), undo, meanLabel);
+        addRow(0, whiteAICheckbox, new Label(" "), whiteDifficultySlider, new Label("      "), newGameButton/*, delayLabel, minDelayField*/);
+        addRow(1, blackAICheckBox, new Label(),blackDifficultySlider, new Label(), undo/*, meanLabel*/);
 
         setAlignment(Pos.TOP_CENTER);
         delayLabel.setContentDisplay(ContentDisplay.RIGHT);
